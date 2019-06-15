@@ -5,7 +5,9 @@ VisualStudioVersion = 16.0.29001.49
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Doodle", "Doodle\Doodle.csproj", "{DB9E7305-AE1C-4C44-8836-335016FC2278}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test", "Test\Test.csproj", "{CD35B1C3-A8C3-4DA0-8AA5-045181AF831D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test", "Test\Test.csproj", "{CD35B1C3-A8C3-4DA0-8AA5-045181AF831D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sample", "Sample\Sample.csproj", "{FFA6DE85-890B-4340-86BC-D35CB1349B65}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{CD35B1C3-A8C3-4DA0-8AA5-045181AF831D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CD35B1C3-A8C3-4DA0-8AA5-045181AF831D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CD35B1C3-A8C3-4DA0-8AA5-045181AF831D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FFA6DE85-890B-4340-86BC-D35CB1349B65}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FFA6DE85-890B-4340-86BC-D35CB1349B65}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FFA6DE85-890B-4340-86BC-D35CB1349B65}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FFA6DE85-890B-4340-86BC-D35CB1349B65}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

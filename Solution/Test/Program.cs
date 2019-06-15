@@ -10,37 +10,37 @@ namespace Test
             var app = new CommandLineApplication(false);
             app.HelpOption("-h|--help");
 
-            var gloO1 = app.Option("-go1", "global o1", CommandOptionType.SingleValue);
+            app.Description = "asdgasdhasdh";
+            app.Name = "Test";
+            app.FullName = "FullTest";
+            app.LongVersionGetter = () => "1.2.3.4";
+            app.ShortVersionGetter = () => "5.6";
 
-            app.OnExecute(() =>
+            app.ExtendedHelpText = "123123";
+
+            app.Syntax = "123123123";
+
+
+            app.Command("UserCommand1", c =>
             {
-                Console.WriteLine($"gloO1: {gloO1.Value()}");
-                return 0;
-            });
-            
-
-
-
-
-            app.Command("TestCommand", c =>
-            {
-                c.Description = "这是一个测试命令。";
-                c.HelpOption("-h|--help");
-
-                var arg1 = c.Argument("arg1", "固定参数1");
-                var opt1 = c.Option("-o1|--opt1", "可选参数1", CommandOptionType.SingleValue);
-
                 c.OnExecute(() =>
                 {
-                    Console.WriteLine("TestCommand执行！");
-                    Console.WriteLine($"固定参数1: {arg1.Value}");
-                    Console.WriteLine($"可选参数1，HasValue：{opt1.HasValue()}, Value: {opt1.Value()}");
-
-                    return int.Parse(arg1.Value);
+                    Console.WriteLine("UserCommand1!");
+                    return 0;
                 });
-            }, false);
+            });
 
-            return new CommandLineApplication()
+
+            app.Execute(args);
+
+
+            app.ShowRootCommandFullNameAndVersion();
+            app.ShowHint();
+            app.ShowVersion();
+
+
+
+            return 0;
         }
     }
 }
