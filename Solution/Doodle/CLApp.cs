@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.CommandLineUtils;
 using System;
+using System.Collections.Generic;
 
 namespace Doodle
 {
@@ -35,28 +36,32 @@ namespace Doodle
             s_globalCommand.OnExecute(() =>
             {
                 if (helpOpt.HasValue())
-                {
-                    rootCommand.ShowRootCommandFullNameAndVersion();
+                {// 输出帮助信息
 
+                    // 获取帮助数组
                     var rootCommandHelpText = rootCommand.GetHelpText();
-                    rootCommandHelpText = rootCommandHelpText.Insert(rootCommandHelpText.IndexOf($"Usage: {rootCommand.Name}", StringComparison.Ordinal) + $"Usage: {rootCommand.Name}".Length + 1, "[globalOptions] ");
+                    List<string> rootCommandHelpTextLines = new List<string>(rootCommandHelpText.Split(Environment.NewLine));
 
-                    Console.WriteLine("==============");
-                    Console.WriteLine(rootCommandHelpText);
-                    Console.WriteLine("==============");
+                    // 添加[globalOptions]
+                    var usageLineIndex = rootCommandHelpTextLines.FindIndex(line => line.StartsWith("Usage:"));
+                    rootCommandHelpTextLines[usageLineIndex] = rootCommandHelpTextLines[usageLineIndex].Insert(
+                        rootCommandHelpTextLines[usageLineIndex].IndexOf($"Usage: {rootCommand.Name}", StringComparison.Ordinal) + $"Usage: {rootCommand.Name}".Length + 1,
+                        "[globalOptions] ");
 
-
-                    Console.WriteLine($"Usage: {rootCommand.Name} [globalOptions] [command]{Environment.NewLine}");
-
-                    Console.WriteLine("GlobalOptions:");
-                    foreach(var opt in s_globalCommand.Options)
+                    // 输出帮助
+                    for (int i = 0; i < rootCommandHelpTextLines.Count; ++i)
                     {
-                        Console.WriteLine($"  {opt.Template}  {opt.Description}");
+                        Console.WriteLine(rootCommandHelpTextLines[i]);
+                        if (i == usageLineIndex + 1)
+                        {// 输出globalOptions的参数
+                            Console.WriteLine("GlobalOptions:");
+                            foreach (var opt in s_globalCommand.Options)
+                            {
+                                Console.WriteLine($"  {opt.Template}  {opt.Description}");
+                            }
+                            Console.WriteLine("");
+                        }
                     }
-
-                    Console.WriteLine("");
-
-                    rootCommand.ShowHelp();
 
                     return 1;
                 }

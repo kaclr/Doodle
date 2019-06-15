@@ -3,7 +3,7 @@ using Microsoft.Extensions.CommandLineUtils;
 
 namespace Test
 {
-    class Program
+    class TestProgram
     {
         static int Main(string[] args)
         {
