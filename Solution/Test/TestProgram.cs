@@ -10,35 +10,15 @@ namespace Test
             var app = new CommandLineApplication(false);
             app.HelpOption("-h|--help");
 
-            app.Description = "asdgasdhasdh";
-            app.Name = "Test";
-            app.FullName = "FullTest";
-            app.LongVersionGetter = () => "1.2.3.4";
-            app.ShortVersionGetter = () => "5.6";
+            //app.Argument("argument1", "参数1", true);
+            app.Option("-opt1", "可选参数1", CommandOptionType.SingleValue);
 
-            app.ExtendedHelpText = "123123";
-
-            app.Syntax = "123123123";
-
-
-            app.Command("UserCommand1", c =>
-            {
-                c.OnExecute(() =>
-                {
-                    Console.WriteLine("UserCommand1!");
-                    return 0;
-                });
-            });
-
+            
 
             app.Execute(args);
 
-
-            app.ShowRootCommandFullNameAndVersion();
-            app.ShowHint();
-            app.ShowVersion();
-
-
+            Console.WriteLine("Remain:");
+            app.RemainingArguments.ForEach(str => Console.WriteLine(str));
 
             return 0;
         }
