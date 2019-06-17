@@ -13,9 +13,14 @@ namespace Doodle
 
         public static CommandLineApplication rootCommand { get; set; }
         private static CommandLineApplication s_globalCommand;
+        private static CommandArgument s_fakeGlobalArgument;
+        private static List<string> s_originArgs;
+        private static readonly List<CommandOption> s_globalOptions = new List<CommandOption>();
 
         public static void Exec(string[] args)
         {
+            s_originArgs = new List<string>(args);
+
             Init();
 
             var remainArgs = ExecGlobalCommand(args);
@@ -29,9 +34,15 @@ namespace Doodle
         {
             s_globalCommand = new CommandLineApplication(false);
 
-            s_globalCommand.Argument(null, null, true);
+            // 这个假的argument是为了吃掉所有输入的argument，不然无法匹配到option。
+            s_fakeGlobalArgument = s_globalCommand.Argument(null, null, true);
+
             var helpOpt = s_globalCommand.Option("-h|--help", "帮助", CommandOptionType.NoValue);
+            s_globalOptions.Add(helpOpt);
+
             var logFileOpt = s_globalCommand.Option("-l|--logFile", "日志文件", CommandOptionType.SingleValue);
+            s_globalOptions.Add(logFileOpt);
+
 
             s_globalCommand.OnExecute(() =>
             {
@@ -89,12 +100,29 @@ namespace Doodle
 
         private static string[] ExecGlobalCommand(string[] args)
         {
+            // 返回1代表执行了某些全局命令，就不要在执行用户命令了。
             if (s_globalCommand.Execute(args) == 1)
             {
                 return null;
             }
 
-            return args;
+            foreach (var opt in s_globalOptions)
+            {
+                ConsumeOriginArgs(opt);
+            }
+
+            return s_originArgs.ToArray();
+        }
+
+        private static void ConsumeOriginArgs(CommandOption option)
+        {
+            var templates = option.Template.Split('|');
+            
+            // 剔除template
+            s_originArgs.RemoveAll(arg => Array.FindIndex<string>(templates, template => template == arg) >= 0);
+
+            // 剔除values
+            s_originArgs.RemoveAll(arg => option.Values.FindIndex(value => value == arg) >= 0);
         }
     }
 }
