@@ -8,6 +8,7 @@ namespace Test
     {
         static void Main(string[] args)
         {
+            // 全局命令
             var globalCommand = new Command("Test");
             var logFileOpt = globalCommand.AddOption(new Option("-l", "日志文件", OptionType.SingleValue));
             globalCommand.OnExecute(() =>
