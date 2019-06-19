@@ -7,7 +7,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Doodle", "Doodle\Doodle.csp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test", "Test\Test.csproj", "{CD35B1C3-A8C3-4DA0-8AA5-045181AF831D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sample", "Sample\Sample.csproj", "{FFA6DE85-890B-4340-86BC-D35CB1349B65}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sample", "Sample\Sample.csproj", "{FFA6DE85-890B-4340-86BC-D35CB1349B65}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DoodleBasic", "DoodleBasic\DoodleBasic.csproj", "{C8D59DC4-62C1-4196-B7FA-159A7692DA98}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +29,10 @@ Global
 		{FFA6DE85-890B-4340-86BC-D35CB1349B65}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FFA6DE85-890B-4340-86BC-D35CB1349B65}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FFA6DE85-890B-4340-86BC-D35CB1349B65}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C8D59DC4-62C1-4196-B7FA-159A7692DA98}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C8D59DC4-62C1-4196-B7FA-159A7692DA98}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C8D59DC4-62C1-4196-B7FA-159A7692DA98}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C8D59DC4-62C1-4196-B7FA-159A7692DA98}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

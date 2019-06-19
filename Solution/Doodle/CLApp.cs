@@ -111,18 +111,33 @@ namespace Doodle
                 ConsumeOriginArgs(opt);
             }
 
+            Logger.Log("Remaining:");
+            s_originArgs.ForEach(arg => Logger.Log(arg));
+
             return s_originArgs.ToArray();
         }
 
         private static void ConsumeOriginArgs(CommandOption option)
         {
-            var templates = option.Template.Split('|');
-            
-            // 剔除template
-            s_originArgs.RemoveAll(arg => Array.FindIndex<string>(templates, template => template == arg) >= 0);
+            if (option.OptionType == CommandOptionType.MultipleValue)
+            {
+                throw new NotImplementedException("MultipleValue hasn't implemented for globalOptions!");
+            }
 
-            // 剔除values
-            s_originArgs.RemoveAll(arg => option.Values.FindIndex(value => value == arg) >= 0);
+            var templates = option.Template.Split('|');
+
+            var templateIndex = s_originArgs.FindIndex(arg => Array.FindIndex<string>(templates, template => template == arg) >= 0);
+            if (templateIndex >= 0)
+            {// 有option
+                var consumeCount = option.OptionType == CommandOptionType.SingleValue ? 1 : 2;
+                if (templateIndex + consumeCount >= s_originArgs.Count)
+                {
+                    // 不该出现，因为如果参数不够的话，CommandLineUtils解析时内部就会报错。
+                    throw new ImplException();
+                }
+
+                s_originArgs.RemoveRange(templateIndex, consumeCount);
+            }
         }
     }
 }
