@@ -1,10 +1,4 @@
 /Solution/.vs
-/Solution/Doodle/bin
-/Solution/Doodle/obj
-/Solution/DoodleBasic/bin
-/Solution/DoodleBasic/obj
-/Solution/Test/bin
-/Solution/Test/obj
-/Solution/Sample/bin
-/Solution/Sample/obj
+bin
+obj
 launchSettings.json
