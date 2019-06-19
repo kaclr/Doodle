@@ -18,6 +18,12 @@ namespace Doodle.CommandLineUtils
             set;
         }
 
+        public string description
+        {
+            get;
+            set;
+        }
+
         public OptionType optionType
         {
             get;
@@ -38,8 +44,15 @@ namespace Doodle.CommandLineUtils
 
         public Type valueType
         {
-            get;
-            set;
+            get { return m_valueType; }
+            set
+            {
+                if (!Command.s_type2Converter.ContainsKey(value))
+                {
+                    throw new CommandLineParseException($"Option '{template}' with value type '{value}' has no Converter, you need register it first!");
+                }
+                m_valueType = value;
+            }
         }
 
         public bool isSet
@@ -52,6 +65,34 @@ namespace Doodle.CommandLineUtils
         {
             get;
             internal set;
+        }
+
+        private Type m_valueType;
+        private string[] m_templates;
+
+        public Option(string template, string description, OptionType optionType)
+        {
+            this.template = template;
+            this.description = description;
+            this.optionType = optionType;
+
+            required = false;
+            valueType = typeof(string);
+
+            m_templates = template.Split('|');
+            // 检查template合法性
+            foreach (var tmplt in m_templates)
+            {
+                if (!tmplt.StartsWith("-") && !tmplt.StartsWith("--"))
+                {
+                    throw new ArgumentException($"template '{tmplt}' is invalid, every template must start with '-' or '--'!");
+                }
+            }
+        }
+
+        internal bool IsMatchTemplate(string arg)
+        {
+            return Array.FindIndex<string>(m_templates, template => template == arg) >= 0;
         }
     }
 }

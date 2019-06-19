@@ -5,9 +5,26 @@ namespace Doodle.CommandLineUtils
 {
     public class Command
     {
-        private static readonly Dictionary<Type, Func<string, object>> s_type2Converter = new Dictionary<Type, Func<string, object>>();
+        internal static readonly Dictionary<Type, Func<string, object>> s_type2Converter;
+
+        static Command()
+        {
+            s_type2Converter = new Dictionary<Type, Func<string, object>>();
+
+            // 注册基本类型的converter
+            s_type2Converter.Add(typeof(string), str => str);
+        }
+
+        public string name { get; set; }
 
         private readonly List<Option> m_options = new List<Option>();
+        private readonly Dictionary<string, Command> m_subCommands = new Dictionary<string, Command>();
+        private Func<int> m_onExecute;
+
+        public Command(string name)
+        {
+            this.name = name;
+        }
 
         public int Execute(params string[] args)
         {
@@ -15,32 +32,28 @@ namespace Doodle.CommandLineUtils
             return ExecuteImpl(lstArg);
         }
 
-        public void OnExecute(Func<int> onExecuteFunc)
+        public void OnExecute(Func<int> onExecute)
         {
-            throw new NotImplementedException();
+            m_onExecute = onExecute;
         }
 
-        public void AddSubCommand(Command command)
+        public Command AddSubCommand(Command command)
         {
-            throw new NotImplementedException();
+            m_subCommands.Add(command.name, command);
+            return command;
         }
 
-        public Argument DefineArgument(string name, string description, bool mutipleValues = false)
+        public Option AddOption(Option option)
         {
-            throw new NotImplementedException();
-        }
-
-        public Option DefineOption(string template, string description, OptionType optionType)
-        {
-            throw new NotImplementedException();
+            m_options.Add(option);
+            return option;
         }
 
         protected int ExecuteImpl(List<string> lstArg)
         {
             foreach (var option in m_options)
             {
-                var index = lstArg.FindIndex(arg => throw new NotImplementedException());
-                var inputOptionTemplate = lstArg[index];
+                var index = lstArg.FindIndex(arg => option.IsMatchTemplate(arg));
                 if (index >= 0)
                 {// 设置了option
                     option.isSet = true;
@@ -50,15 +63,12 @@ namespace Doodle.CommandLineUtils
                     {
                         if (index + 1 >= lstArg.Count)
                         {
-                            throw new CommandLineParseException($"Option '{inputOptionTemplate}' has no value!");
+                            throw new CommandLineParseException($"Option '{lstArg[index]}' has no value!");
                         }
 
                         consumeCount = 2;
                         string strValue = lstArg[index + 1];
-                        if (!s_type2Converter.TryGetValue(option.valueType, out Func<string, object> converter))
-                        {
-                            throw new CommandLineParseException($"Option '{inputOptionTemplate}' has no Converter, type is '{option.valueType}'!");
-                        }
+                        s_type2Converter.TryGetValue(option.valueType, out Func<string, object> converter);
                         option.value = converter(strValue);
                     }
 
@@ -78,9 +88,22 @@ namespace Doodle.CommandLineUtils
 
                 if (option.value.GetType() != option.valueType)
                 {// 类型不匹配
-                    throw new CommandLineParseException($"Option '{inputOptionTemplate}' 's value type is missmatched, need type is '{option.valueType}', receive type is '{option.value.GetType()}'!");
+                    throw new CommandLineParseException($"Option '{option.template}' 's value type is mismatched, need type is '{option.valueType}', receive type is '{option.value.GetType()}'!");
                 }
             }
+
+            // todo argument
+
+
+            var retValue = m_onExecute();
+
+            if (lstArg.Count > 0 && m_subCommands.TryGetValue(lstArg[0], out var subCommand))
+            {// 调用子命令
+
+                // 使用子命令的返回值
+                retValue = subCommand.ExecuteImpl(lstArg);
+            }
+            return retValue;
         }
     }
 }

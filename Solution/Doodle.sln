@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29001.49
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Doodle.CommandLineUtils", "Doodle.CommandLineUtils\Doodle.CommandLineUtils.csproj", "{6E87BF35-4C11-4B66-8134-84AC3009FA6F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Doodle.CommandLineUtils", "Doodle.CommandLineUtils\Doodle.CommandLineUtils.csproj", "{6E87BF35-4C11-4B66-8134-84AC3009FA6F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Doodle.Basic", "Doodle.Basic\Doodle.Basic.csproj", "{CD816A77-DAB0-41CE-A3C6-91756C96D52E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Doodle", "Doodle.Basic\Doodle.csproj", "{CD816A77-DAB0-41CE-A3C6-91756C96D52E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test", "Test\Test.csproj", "{96EB48B5-0BAA-430A-AB2D-B94528A844B2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test", "Test\Test.csproj", "{96EB48B5-0BAA-430A-AB2D-B94528A844B2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
