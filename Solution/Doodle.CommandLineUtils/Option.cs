@@ -10,7 +10,7 @@ namespace Doodle.CommandLineUtils
         NoValue,
     }
 
-    public class Option
+    public class Option : Param
     {
         public string template
         {
@@ -30,19 +30,19 @@ namespace Doodle.CommandLineUtils
             set;
         }
 
-        public bool required
+        public override bool required
         {
             get;
             set;
         }
 
-        public Func<object> defaultValue
+        public override Func<object> defaultValue
         {
             get;
             set;
         }
 
-        public Type valueType
+        public override Type valueType
         {
             get { return m_valueType; }
             set

@@ -18,6 +18,7 @@ namespace Doodle.CommandLineUtils
         public string name { get; set; }
 
         private readonly List<Option> m_options = new List<Option>();
+        private readonly List<Argument> m_arguments = new List<Argument>();
         private readonly Dictionary<string, Command> m_subCommands = new Dictionary<string, Command>();
         private Func<int> m_onExecute;
 
@@ -51,14 +52,20 @@ namespace Doodle.CommandLineUtils
 
         protected int ExecuteImpl(List<string> lstArg)
         {
+            // 先解析option
             foreach (var option in m_options)
             {
-                var index = lstArg.FindIndex(arg => option.IsMatchTemplate(arg));
-                if (index >= 0)
-                {// 设置了option
-                    option.isSet = true;
+                string rawValue = null;
+                int consumeCount = 0;
 
-                    int consumeCount = 1;
+                var index = lstArg.FindIndex(arg => option.IsMatchTemplate(arg));
+                option.isSet = index >= 0;
+                option.value = null;
+
+                if (option.isSet)
+                {// 设置了option
+
+                    consumeCount = 1;
                     if (option.optionType == OptionType.SingleValue)
                     {
                         if (index + 1 >= lstArg.Count)
@@ -67,32 +74,23 @@ namespace Doodle.CommandLineUtils
                         }
 
                         consumeCount = 2;
-                        string strValue = lstArg[index + 1];
-                        s_type2Converter.TryGetValue(option.valueType, out Func<string, object> converter);
-                        option.value = converter(strValue);
+                        rawValue = lstArg[index + 1];
                     }
-
-                    // 消耗arg
-                    lstArg.RemoveRange(index, consumeCount);
-                }
-                else
-                {// 没有设置option
-                    if (option.required)
-                    {// 未设置必选option
-                        throw new CommandLineParseException($"Lack of required option '{option.template}'!");
-                    }
-
-                    option.isSet = false;
-                    option.value = option.defaultValue();
                 }
 
-                if (option.value.GetType() != option.valueType)
-                {// 类型不匹配
-                    throw new CommandLineParseException($"Option '{option.template}' 's value type is mismatched, need type is '{option.valueType}', receive type is '{option.value.GetType()}'!");
-                }
+                option.value = ObtainValue(rawValue, option,
+                    $"Option '{option.template}' 's value type is mismatched, need type is '{option.valueType}', receive type is '{option.value.GetType()}'!",
+                    $"Lack of required option '{option.template}'!");
+
+                // 消耗arg
+                lstArg.RemoveRange(index, consumeCount);
             }
 
-            // todo argument
+            // 再解析argument
+            foreach (var argument in m_arguments)
+            {
+
+            }
 
 
             var retValue = m_onExecute();
@@ -104,6 +102,32 @@ namespace Doodle.CommandLineUtils
                 retValue = subCommand.ExecuteImpl(lstArg);
             }
             return retValue;
+        }
+
+        private object ObtainValue(string rawValue, Param param, string errOnType, string errOnRequired)
+        {
+            object value = null;
+            if (rawValue != null)
+            {
+                s_type2Converter.TryGetValue(param.valueType, out Func<string, object> converter);
+                value = converter(rawValue);
+            }
+            else
+            {
+                if (param.required)
+                {// 未设置必选param
+                    throw new CommandLineParseException(errOnRequired);
+                }
+
+                value = param.defaultValue();
+            }
+
+            if (value.GetType() != param.valueType)
+            {// 类型不匹配
+                throw new CommandLineParseException(errOnType);
+            }
+
+            return value;
         }
     }
 }

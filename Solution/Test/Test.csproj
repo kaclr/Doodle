@@ -8,6 +8,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Doodle.Basic\Doodle.csproj" />
     <ProjectReference Include="..\Doodle.CommandLineUtils\Doodle.CommandLineUtils.csproj" />
+    <ProjectReference Include="..\Doodle\Doodle.csproj" />
   </ItemGroup>
 
 </Project>
