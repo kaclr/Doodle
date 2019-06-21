@@ -31,7 +31,7 @@ namespace Doodle.CommandLineUtils
             {
                 if (mutiValue)
                 {
-                    throw new ArgumentConfigurationException($"{displayName} with mutiple value can not has default value!");
+                    throw new ParamConfigurationException($"{displayName} with mutiple value can not has default value!");
                 }
                 m_defaultValue = value;
             }
@@ -46,6 +46,8 @@ namespace Doodle.CommandLineUtils
             this.name = name;
             this.description = description;
             this.mutiValue = mutiValue;
+
+            valueType = typeof(string);
         }
     }
 }

@@ -23,6 +23,8 @@ namespace Doodle.CommandLineUtils
         private readonly List<Argument> m_arguments = new List<Argument>();
         private readonly Dictionary<string, Command> m_subCommands = new Dictionary<string, Command>();
         private Func<int> m_onExecute;
+        private bool m_hasDefaultArgument;
+        private bool m_hasMutiValue;
 
         public Command(string name)
         {
@@ -44,6 +46,25 @@ namespace Doodle.CommandLineUtils
         {
             m_subCommands.Add(command.name, command);
             return command;
+        }
+
+        public Argument AddArgument(Argument argument)
+        {
+            if (m_hasMutiValue)
+            {// 变长参数只能是最后一个参数
+                throw new ParamConfigurationException($"Command '{name}' already exists a multiple value argument, can not have other argument!");
+            }
+            if (m_hasDefaultArgument && argument.defaultValue == null)
+            {// 有默认值的参数后面只能是有默认值的参数
+                throw new ParamConfigurationException($"{argument.displayName} is a default argument, must at the end of the arguments!");
+            }
+
+            m_hasDefaultArgument = argument.defaultValue != null;
+            m_hasMutiValue = argument.mutiValue;
+
+            m_arguments.Add(argument);
+
+            return argument;
         }
 
         public Option AddOption(Option option)
@@ -83,11 +104,11 @@ namespace Doodle.CommandLineUtils
                 else
                 {// 没有设置option
                     if (option.required)
-                    {// 未设置必选option
+                    // 未设置必选option
                         throw new CommandLineParseException($"Lack of required option '{option.template}'!");
-                    }
 
-                    option.value = HandleUnsetValue(option);
+                    if (option.optionType == OptionType.SingleValue)
+                        option.value = HandleUnsetValue(option);
                 }
             }
 
@@ -127,11 +148,15 @@ namespace Doodle.CommandLineUtils
                 }
             }
 
-
+            // 执行本命令逻辑
             var retValue = m_onExecute();
 
+            // 如果还有剩余参数，用第一个参数匹配执行子命令
             if (lstArg.Count > 0 && m_subCommands.TryGetValue(lstArg[0], out var subCommand))
             {// 调用子命令
+
+                // 消耗arg
+                lstArg.RemoveAt(0);
 
                 // 使用子命令的返回值
                 retValue = subCommand.ExecuteImpl(lstArg);

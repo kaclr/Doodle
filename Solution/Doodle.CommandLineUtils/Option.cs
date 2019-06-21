@@ -55,7 +55,7 @@ namespace Doodle.CommandLineUtils
             {
                 if (!tmplt.StartsWith("-") && !tmplt.StartsWith("--"))
                 {
-                    throw new ArgumentException($"template '{tmplt}' is invalid, every template must start with '-' or '--'!");
+                    throw new ParamConfigurationException($"template '{tmplt}' is invalid, every template must start with '-' or '--'!");
                 }
             }
         }
