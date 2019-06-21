@@ -10,15 +10,9 @@ namespace Doodle.CommandLineUtils
         NoValue,
     }
 
-    public class Option
+    public class Option : Param
     {
         public string template
-        {
-            get;
-            set;
-        }
-
-        public string description
         {
             get;
             set;
@@ -36,39 +30,15 @@ namespace Doodle.CommandLineUtils
             set;
         }
 
-        public Func<object> defaultValue
-        {
-            get;
-            set;
-        }
-
-        public Type valueType
-        {
-            get { return m_valueType; }
-            set
-            {
-                if (!Command.s_type2Converter.ContainsKey(value))
-                {
-                    throw new CommandLineParseException($"Option '{template}' with value type '{value}' has no Converter, you need register it first!");
-                }
-                m_valueType = value;
-            }
-        }
-
         public bool isSet
         {
             get;
             internal set;
         }
 
-        public object value
-        {
-            get;
-            internal set;
-        }
+        public override string displayName => $"option '{template}'";
 
-        private Type m_valueType;
-        private string[] m_templates;
+        private readonly string[] m_templates;
 
         public Option(string template, string description, OptionType optionType)
         {

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Doodle;
 
 namespace Doodle.CommandLineUtils
 {
@@ -9,15 +10,17 @@ namespace Doodle.CommandLineUtils
 
         static Command()
         {
-            s_type2Converter = new Dictionary<Type, Func<string, object>>();
-
-            // 注册基本类型的converter
-            s_type2Converter.Add(typeof(string), str => str);
+            s_type2Converter = new Dictionary<Type, Func<string, object>>
+            {
+                // 注册基本类型的converter
+                { typeof(string), str => str }
+            };
         }
 
         public string name { get; set; }
 
         private readonly List<Option> m_options = new List<Option>();
+        private readonly List<Argument> m_arguments = new List<Argument>();
         private readonly Dictionary<string, Command> m_subCommands = new Dictionary<string, Command>();
         private Func<int> m_onExecute;
 
@@ -51,12 +54,15 @@ namespace Doodle.CommandLineUtils
 
         protected int ExecuteImpl(List<string> lstArg)
         {
+            // 先处理option
             foreach (var option in m_options)
             {
                 var index = lstArg.FindIndex(arg => option.IsMatchTemplate(arg));
-                if (index >= 0)
+                option.isSet = index >= 0;
+                option.value = null;
+
+                if (option.isSet)
                 {// 设置了option
-                    option.isSet = true;
 
                     int consumeCount = 1;
                     if (option.optionType == OptionType.SingleValue)
@@ -67,9 +73,8 @@ namespace Doodle.CommandLineUtils
                         }
 
                         consumeCount = 2;
-                        string strValue = lstArg[index + 1];
-                        s_type2Converter.TryGetValue(option.valueType, out Func<string, object> converter);
-                        option.value = converter(strValue);
+                        string rawValue = lstArg[index + 1];
+                        option.value = HandleSettedValue(option, rawValue);
                     }
 
                     // 消耗arg
@@ -82,17 +87,45 @@ namespace Doodle.CommandLineUtils
                         throw new CommandLineParseException($"Lack of required option '{option.template}'!");
                     }
 
-                    option.isSet = false;
-                    option.value = option.defaultValue();
-                }
-
-                if (option.value.GetType() != option.valueType)
-                {// 类型不匹配
-                    throw new CommandLineParseException($"Option '{option.template}' 's value type is mismatched, need type is '{option.valueType}', receive type is '{option.value.GetType()}'!");
+                    option.value = HandleUnsetValue(option);
                 }
             }
 
-            // todo argument
+            // 再处理argument
+            foreach (var argument in m_arguments)
+            {
+                if (argument.mutiValue)
+                {// 变长参数
+
+                    // 创建对应类型的数组，大小要吃光所有参数
+                    var values = Array.CreateInstance(argument.valueType, lstArg.Count);
+                    for (int i = 0; i < lstArg.Count; ++i)
+                    {
+                        values.SetValue(HandleSettedValue(argument, lstArg[i]), i);
+                    }
+
+                    argument.value = values;
+                    argument.values = values;
+
+                    // 消耗arg
+                    lstArg.Clear();
+                }
+                else
+                {
+                    if (lstArg.Count >= 1)
+                    {// 有值
+                        string rawValue = lstArg[0];
+                        argument.value = HandleSettedValue(argument, rawValue);
+
+                        // 消耗arg
+                        lstArg.RemoveAt(0);
+                    }
+                    else
+                    {// 无值
+                        argument.value = HandleUnsetValue(argument);
+                    }
+                }
+            }
 
 
             var retValue = m_onExecute();
@@ -104,6 +137,35 @@ namespace Doodle.CommandLineUtils
                 retValue = subCommand.ExecuteImpl(lstArg);
             }
             return retValue;
+        }
+
+        private object HandleSettedValue(Param param, string rawValue)
+        {
+            Debug.Assert(s_type2Converter.TryGetValue(param.valueType, out Func<string, object> converter));
+            var value = converter(rawValue);
+
+            if (value.GetType() != param.valueType)
+            {// 类型不匹配
+                throw new CommandLineParseException($"The value type of {param.displayName} is mismatched, need type is '{param.valueType}', receive type is '{value.GetType()}'!");
+            }
+
+            return value;
+        }
+
+        private object HandleUnsetValue(Param param)
+        {
+            if (param.defaultValue == null)
+            {
+                throw new CommandLineParseException($"Unset {param.displayName} without defaultValue!");
+            }
+
+            var value = param.defaultValue();
+            if (value.GetType() != param.valueType)
+            {// 类型不匹配
+                throw new CommandLineParseException($"The value type of {param.displayName} is mismatched, need type is '{param.valueType}', receive type is '{value.GetType()}'!");
+            }
+
+            return value;
         }
     }
 }
