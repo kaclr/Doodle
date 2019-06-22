@@ -1,4 +1,5 @@
-/Solution/.vs
+.vs
 bin
 obj
 launchSettings.json
+Net35Solution/*/src
