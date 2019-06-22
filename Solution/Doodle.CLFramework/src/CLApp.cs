@@ -2,6 +2,9 @@
 
 namespace Doodle.CommandLineUtils
 {
+    /// <summary>
+    /// Command Line Application
+    /// </summary>
     public static class CLApp
     {
         public static string appName
