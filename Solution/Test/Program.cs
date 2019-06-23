@@ -6,32 +6,39 @@ namespace Test
 {
     class Program
     {
-        static string TestFunc(object value)
+        private static string Test()
         {
             return null;
         }
 
+        private static int BuildApk(
+            [ParameterConfiguration("客户端工程中的Tools目录")] string toolsDir,
+            [ParameterConfiguration("", optionTemplate = "-b")] bool toolsDir2,
+            [ParameterConfiguration("产物输出目录", optionTemplate = "-o")] string outputDir = "1652136")
+        {
+            Logger.Log("BuildApk!");
+            Logger.Log("toolsDir: " + toolsDir);
+            Logger.Log("toolsDir2: " + toolsDir2);
+            Logger.Log("outputDir: " + outputDir);
+
+            return 0;
+        }
+
+        private static int BuildApk2(
+            string toolsDir,
+            string outputDir = null)
+        {
+            Logger.Log("BuildApk!");
+            Logger.Log("toolsDir: " + toolsDir);
+            Logger.Log("outputDir: " + outputDir);
+
+            return 0;
+        }
+
         static void Main(string[] args)
         {
-            var command1 = new Command("Command1");
-            var arg1 = command1.AddArgument(new Argument("arg1", "固定参数1", false) { defaultValue = () => "aaa" });
-            //var arg2 = command1.AddArgument(new Argument("arg2", "固定参数2", false));
-            var opt1 = command1.AddOption(new Option("-opt1", "参数1", OptionType.SingleValue));
-
-            opt1.valueChecker = TestFunc;
-
-            command1.OnExecute(() =>
-            {
-                Logger.Log("Command1:");
-                Logger.Log($"arg1: Value: {arg1.value}");
-               
-                Logger.Log($"opt1: IsSet: {opt1.isSet}, Value: {opt1.value}");
-
-                return 1;
-            });
-
             CLApp.appName = "Test";
-            CLApp.AddSubCommand(command1);
+            CLApp.AddSubCommand(MethodCommand.New(typeof(Program).GetMethod("BuildApk", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static)));
             CLApp.Launch(args);
         }
     }

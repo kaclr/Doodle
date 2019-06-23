@@ -37,6 +37,18 @@ namespace Doodle.CommandLineUtils
             return command;
         }
 
+        public Param AddParam(Param param)
+        {
+            if (param is Argument)
+            {
+                return AddArgument((Argument)param);
+            }
+            else
+            {
+                return AddOption((Option)param);
+            }
+        }
+
         public Argument AddArgument(Argument argument)
         {
             if (m_hasMutiValue)
@@ -60,6 +72,11 @@ namespace Doodle.CommandLineUtils
         {
             m_options.Add(option);
             return option;
+        }
+
+        public IEnumerable<Argument> EnumArguments()
+        {
+            return m_arguments;
         }
 
         protected int ExecuteImpl(List<string> lstArg)
@@ -98,7 +115,7 @@ namespace Doodle.CommandLineUtils
 
                     if (option.optionType == OptionType.SingleValue && option.defaultValue != null)
                     {// 设置默认值
-                        var value = option.defaultValue;
+                        var value = option.defaultValue();
                         CheckValue(option, value);
                         option.value = value;
                     }
@@ -138,7 +155,7 @@ namespace Doodle.CommandLineUtils
                     {// 无值
 
                         if (argument.defaultValue == null)
-                            throw new CommandLineParseException($"Unset {argument.displayName} without defaultValue!");
+                            throw new CommandLineParseException($"{argument.displayName} is required!");
 
                         var value = argument.defaultValue();
                         CheckValue(argument, value);
@@ -176,9 +193,17 @@ namespace Doodle.CommandLineUtils
 
         private void CheckValue(Param param, object value)
         {
-            if (value.GetType() != param.valueType)
-            {// 类型不匹配
-                throw new CommandLineParseException($"The value type of {param.displayName} is mismatched, need type is '{param.valueType}', receive type is '{value.GetType()}'!");
+            if (value == null)
+            {
+                if (param.valueType.IsValueType)
+                    throw new CommandLineParseException($"The value type of {param.displayName} is {param.valueType.Name}, can't be null!");
+            }
+            else
+            {
+                if (value.GetType() != param.valueType)
+                {// 类型不匹配
+                    throw new CommandLineParseException($"The value type of {param.displayName} is mismatched, need type is '{param.valueType}', receive type is '{value.GetType()}'!");
+                }
             }
             
             // 额外的值检查

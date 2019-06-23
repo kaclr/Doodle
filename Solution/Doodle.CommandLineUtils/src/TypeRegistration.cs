@@ -17,6 +17,21 @@ namespace Doodle.CommandLineUtils
                 { typeof(int), str => int.Parse(str) },
                 { typeof(double), str => double.Parse(str) },
                 { typeof(float), str => float.Parse(str) },
+                { typeof(bool), str => 
+                {
+                    if (str == "true")
+                    {
+                        return true;
+                    }
+                    else if (str == "false")
+                    {
+                        return false;
+                    }
+                    else
+                    {
+                        throw new CommandLineParseException($"Bool value can only be 'true' of 'false', input is '{str}'");
+                    }
+                } },
             };
         }
 
