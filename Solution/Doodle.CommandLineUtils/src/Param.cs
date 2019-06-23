@@ -11,12 +11,18 @@ namespace Doodle.CommandLineUtils
             get { return m_valueType; }
             set
             {
-                if (!Command.s_type2Converter.ContainsKey(value))
+                if (!TypeRegistration.s_type2Converter.ContainsKey(value))
                 {
-                    throw new CommandLineParseException($"{displayName} with value type '{value}' has no Converter, you need register it first!");
+                    throw new CommandLineParseException($"{displayName} with value type '{value}' has no Converter, you need register it in {typeof(TypeRegistration).Name} first!");
                 }
                 m_valueType = value;
             }
+        }
+
+        public Func<object, string> valueChecker
+        {
+            get;
+            set;
         }
 
         public virtual Func<object> defaultValue

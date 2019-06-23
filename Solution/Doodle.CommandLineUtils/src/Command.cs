@@ -6,17 +6,6 @@ namespace Doodle.CommandLineUtils
 {
     public class Command
     {
-        internal static readonly Dictionary<Type, Func<string, object>> s_type2Converter;
-
-        static Command()
-        {
-            s_type2Converter = new Dictionary<Type, Func<string, object>>
-            {
-                // 注册基本类型的converter
-                { typeof(string), str => str }
-            };
-        }
-
         public string name { get; set; }
 
         private readonly List<Option> m_options = new List<Option>();
@@ -177,7 +166,7 @@ namespace Doodle.CommandLineUtils
 
         private object HandleSettedValue(Param param, string rawValue)
         {
-            Debug.Assert(s_type2Converter.TryGetValue(param.valueType, out Func<string, object> converter));
+            Debug.Assert(TypeRegistration.s_type2Converter.TryGetValue(param.valueType, out Func<string, object> converter));
             var value = converter(rawValue);
 
             CheckValue(param, value);
@@ -190,6 +179,14 @@ namespace Doodle.CommandLineUtils
             if (value.GetType() != param.valueType)
             {// 类型不匹配
                 throw new CommandLineParseException($"The value type of {param.displayName} is mismatched, need type is '{param.valueType}', receive type is '{value.GetType()}'!");
+            }
+            
+            // 额外的值检查
+            if (param.valueChecker != null)
+            {
+                var error = param.valueChecker(value);
+                if (error != null)
+                    throw new CommandLineParseException($"Checking {param.displayName} failed: {error}!");
             }
         }
     }
