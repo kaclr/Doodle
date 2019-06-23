@@ -8,14 +8,17 @@ namespace Doodle.CommandLineUtils
     {
         public Type valueType
         {
-            get { return m_valueType; }
+            get
+            {
+                return typeConfiguration.type;
+            }
             set
             {
-                if (!Command.s_type2Converter.ContainsKey(value))
+                if (!CustomTypeFactory.s_dicValueType.TryGetValue(value, out ITypeConfiguration customType))
                 {
-                    throw new CommandLineParseException($"{displayName} with value type '{value}' has no Converter, you need register it first!");
+                    throw new ParamConfigurationException($"Unknown type '{value.Name}', please register it in {typeof(CustomTypeFactory).Name}");
                 }
-                m_valueType = value;
+                this.typeConfiguration = customType;
             }
         }
 
@@ -39,6 +42,15 @@ namespace Doodle.CommandLineUtils
 
         public abstract string displayName { get; }
 
-        private Type m_valueType;
+        internal ITypeConfiguration typeConfiguration
+        {
+            get;
+            private set;
+        }
+
+        protected Param()
+        {
+            typeConfiguration = new StringValueType();
+        }
     }
 }

@@ -18,7 +18,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>E:\FakeNssUnityProj\NssUnityProj\Assets\Editor\Doodle\</OutputPath>
+    <OutputPath>..\..\..\NssUnityProj\Assets\Editor\Doodle\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -55,6 +55,9 @@
       <Project>{83f18b3c-920f-40c2-8c16-954effcb0d91}</Project>
       <Name>Doodle</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="src\CLValueType\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

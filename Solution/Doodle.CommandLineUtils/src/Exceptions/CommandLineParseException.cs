@@ -7,5 +7,6 @@ namespace Doodle.CommandLineUtils
     public class CommandLineParseException : CommandLineException
     {
         public CommandLineParseException(string message) : base(message) { }
+        public CommandLineParseException(string message, Exception innerException) : base(message, innerException) { }
     }
 }

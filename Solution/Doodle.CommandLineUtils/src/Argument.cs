@@ -46,8 +46,6 @@ namespace Doodle.CommandLineUtils
             this.name = name;
             this.description = description;
             this.mutiValue = mutiValue;
-
-            valueType = typeof(string);
         }
     }
 }

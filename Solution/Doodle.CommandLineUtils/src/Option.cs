@@ -47,7 +47,6 @@ namespace Doodle.CommandLineUtils
             this.optionType = optionType;
 
             required = false;
-            valueType = typeof(string);
 
             m_templates = template.Split('|');
             // 检查template合法性

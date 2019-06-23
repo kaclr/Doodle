@@ -6,17 +6,6 @@ namespace Doodle.CommandLineUtils
 {
     public class Command
     {
-        internal static readonly Dictionary<Type, Func<string, object>> s_type2Converter;
-
-        static Command()
-        {
-            s_type2Converter = new Dictionary<Type, Func<string, object>>
-            {
-                // 注册基本类型的converter
-                { typeof(string), str => str }
-            };
-        }
-
         public string name { get; set; }
 
         private readonly List<Option> m_options = new List<Option>();
@@ -123,7 +112,7 @@ namespace Doodle.CommandLineUtils
                 {// 变长参数
 
                     // 创建对应类型的数组，大小要吃光所有参数
-                    var values = Array.CreateInstance(argument.valueType, lstArg.Count);
+                    var values = Array.CreateInstance(argument.typeConfiguration.type, lstArg.Count);
                     for (int i = 0; i < lstArg.Count; ++i)
                     {
                         values.SetValue(HandleSettedValue(argument, lstArg[i]), i);
@@ -177,9 +166,16 @@ namespace Doodle.CommandLineUtils
 
         private object HandleSettedValue(Param param, string rawValue)
         {
-            Debug.Assert(s_type2Converter.TryGetValue(param.valueType, out Func<string, object> converter));
-            var value = converter(rawValue);
-
+            object value;
+            try
+            {
+                value = param.typeConfiguration.Convert(rawValue);
+            }
+            catch (Exception e)
+            {
+                throw new CommandLineParseException($"{param.displayName} convert failed, value type is '{param.typeConfiguration.GetType().Name}', raw value is '{rawValue}', error detail:\n {e.Message}");
+            }
+            
             CheckValue(param, value);
 
             return value;
@@ -187,10 +183,14 @@ namespace Doodle.CommandLineUtils
 
         private void CheckValue(Param param, object value)
         {
-            if (value.GetType() != param.valueType)
+            if (value.GetType() != param.typeConfiguration.type)
             {// 类型不匹配
-                throw new CommandLineParseException($"The value type of {param.displayName} is mismatched, need type is '{param.valueType}', receive type is '{value.GetType()}'!");
+                throw new CommandLineParseException($"The value type of {param.displayName} is mismatched, need type is '{param.typeConfiguration}', receive type is '{value.GetType()}'!");
             }
+
+            var errMsg = param.typeConfiguration.Check(value);
+            if (errMsg != null)
+                throw new CommandLineParseException($"Checking {param.displayName} failed: {errMsg}!");
         }
     }
 }
