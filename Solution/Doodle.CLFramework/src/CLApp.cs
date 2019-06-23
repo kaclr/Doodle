@@ -22,9 +22,10 @@ namespace Doodle.CommandLineUtils
             return m_rootCommand.Execute(args);
         }
 
-        public static void AddSubCommand(Command command)
+        public static Command AddSubCommand(Command command)
         {
             m_rootCommand.AddSubCommand(command);
+            return command;
         }
 
         private static void Init()

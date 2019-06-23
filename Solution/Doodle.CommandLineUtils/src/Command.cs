@@ -107,8 +107,12 @@ namespace Doodle.CommandLineUtils
                     // 未设置必选option
                         throw new CommandLineParseException($"Lack of required option '{option.template}'!");
 
-                    if (option.optionType == OptionType.SingleValue)
-                        option.value = HandleUnsetValue(option);
+                    if (option.optionType == OptionType.SingleValue && option.defaultValue != null)
+                    {// 设置默认值
+                        var value = option.defaultValue;
+                        CheckValue(option, value);
+                        option.value = value;
+                    }
                 }
             }
 
@@ -143,7 +147,14 @@ namespace Doodle.CommandLineUtils
                     }
                     else
                     {// 无值
-                        argument.value = HandleUnsetValue(argument);
+
+                        if (argument.defaultValue == null)
+                            throw new CommandLineParseException($"Unset {argument.displayName} without defaultValue!");
+
+                        var value = argument.defaultValue();
+                        CheckValue(argument, value);
+
+                        argument.value = value;
                     }
                 }
             }
@@ -169,28 +180,17 @@ namespace Doodle.CommandLineUtils
             Debug.Assert(s_type2Converter.TryGetValue(param.valueType, out Func<string, object> converter));
             var value = converter(rawValue);
 
-            if (value.GetType() != param.valueType)
-            {// 类型不匹配
-                throw new CommandLineParseException($"The value type of {param.displayName} is mismatched, need type is '{param.valueType}', receive type is '{value.GetType()}'!");
-            }
+            CheckValue(param, value);
 
             return value;
         }
 
-        private object HandleUnsetValue(Param param)
+        private void CheckValue(Param param, object value)
         {
-            if (param.defaultValue == null)
-            {
-                throw new CommandLineParseException($"Unset {param.displayName} without defaultValue!");
-            }
-
-            var value = param.defaultValue();
             if (value.GetType() != param.valueType)
             {// 类型不匹配
                 throw new CommandLineParseException($"The value type of {param.displayName} is mismatched, need type is '{param.valueType}', receive type is '{value.GetType()}'!");
             }
-
-            return value;
         }
     }
 }
