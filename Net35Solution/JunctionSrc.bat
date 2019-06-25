@@ -1,3 +1,4 @@
-..\Tools\Junction\junction64.exe C:\Work\Doodle\Net35Solution\Doodle\src C:\Work\Doodle\Solution\Doodle\src
-..\Tools\Junction\junction64.exe C:\Work\Doodle\Net35Solution\Doodle.CommandLineUtils\src C:\Work\Doodle\Solution\Doodle.CommandLineUtils\src
-..\Tools\Junction\junction64.exe C:\Work\Doodle\Net35Solution\Doodle.CLFramework\src C:\Work\Doodle\Solution\Doodle.CLFramework\src
+..\Tools\Junction\junction64.exe Doodle\src ..\Solution\Doodle\src
+..\Tools\Junction\junction64.exe Doodle.CommandLineUtils\src ..\Solution\Doodle.CommandLineUtils\src
+..\Tools\Junction\junction64.exe Doodle.CLFramework\src ..\Solution\Doodle.CLFramework\src
+..\Tools\Junction\junction64.exe NssIntegrationCommon\src ..\Solution\NssIntegrationCommon\src

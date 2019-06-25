@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Doodle.CommandLineUtils", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Doodle.CLFramework", "Doodle.CLFramework\Doodle.CLFramework.csproj", "{CE96E614-EC06-414F-8812-652B347C9794}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NssIntegrationCommon", "NssIntegrationCommon\NssIntegrationCommon.csproj", "{BC5780FC-7A19-46C1-8391-2EB3318B18DF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{CE96E614-EC06-414F-8812-652B347C9794}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CE96E614-EC06-414F-8812-652B347C9794}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CE96E614-EC06-414F-8812-652B347C9794}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BC5780FC-7A19-46C1-8391-2EB3318B18DF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BC5780FC-7A19-46C1-8391-2EB3318B18DF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BC5780FC-7A19-46C1-8391-2EB3318B18DF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BC5780FC-7A19-46C1-8391-2EB3318B18DF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

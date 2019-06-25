@@ -9,9 +9,9 @@ namespace Doodle.CommandLineUtils
     {
         public static Command New(MethodInfo method, Func<object> getInstance = null)
         {
-            if (method.ReturnType != typeof(int))
+            if (method.ReturnType != typeof(int) && method.ReturnType != typeof(void))
             {
-                throw new ArgumentException($"New MethodCommand '{method.Name}' failed, Method must return a int value!");
+                throw new ArgumentException($"New MethodCommand '{method.Name}' failed, Method must return a int or null!");
             }
 
             var methodParameters = method.GetParameters();
@@ -98,7 +98,11 @@ namespace Doodle.CommandLineUtils
                     obj = getInstance();
 
                 var ret = method.Invoke(obj, parameters);
-                return (int)ret;
+                if (method.ReturnType == typeof(int))
+                    return (int)ret;
+                else
+                // void函数都返回0
+                    return 0;
             });
 
             return command;

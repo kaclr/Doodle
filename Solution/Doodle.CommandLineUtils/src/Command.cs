@@ -183,8 +183,9 @@ namespace Doodle.CommandLineUtils
 
         private object HandleSettedValue(Param param, string rawValue)
         {
-            Debug.Assert(TypeRegistration.s_type2Converter.TryGetValue(param.valueType, out Func<string, object> converter));
-            var value = converter(rawValue);
+            var converter = TypeRegistration.GetConverter(param.valueType);
+            Debug.Assert(converter != null);
+            var value = converter(param.valueType, rawValue);
 
             CheckValue(param, value);
 

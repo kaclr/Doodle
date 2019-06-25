@@ -14,6 +14,7 @@ namespace Doodle.CommandLineUtils
         }
 
         private static readonly Command m_rootCommand = new Command("");
+        private static bool s_inited = false;
 
         public static int Launch(string[] args)
         {
@@ -30,6 +31,12 @@ namespace Doodle.CommandLineUtils
 
         private static void Init()
         {
+            if (s_inited)
+                return;
+            s_inited = true;
+
+            SpaceUtil.SetTempSpace("temp");
+
             var verbose = m_rootCommand.AddOption(new Option("-v|--verbose", "输出冗余", OptionType.NoValue));
             m_rootCommand.OnExecute(() =>
             {

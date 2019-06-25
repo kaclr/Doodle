@@ -11,7 +11,7 @@ namespace Doodle.CommandLineUtils
             get { return m_valueType; }
             set
             {
-                if (!TypeRegistration.s_type2Converter.ContainsKey(value))
+                if (!TypeRegistration.ContainsConverter(value))
                 {
                     throw new CommandLineParseException($"{displayName} with value type '{value}' has no Converter, you need register it in {typeof(TypeRegistration).Name} first!");
                 }

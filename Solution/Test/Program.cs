@@ -1,6 +1,7 @@
 ﻿using System;
 using Doodle;
 using Doodle.CommandLineUtils;
+using NssIntegrationCommon;
 
 namespace Test
 {
@@ -37,9 +38,7 @@ namespace Test
 
         static void Main(string[] args)
         {
-            CLApp.appName = "Test";
-            CLApp.AddSubCommand(MethodCommand.New(typeof(Program).GetMethod("BuildApk", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static)));
-            CLApp.Launch(args);
+            CmdUtil.ExecuteCmd($"python \"{args[0]}\" Output");
         }
     }
 }
