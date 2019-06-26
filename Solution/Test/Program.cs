@@ -38,7 +38,9 @@ namespace Test
 
         static void Main(string[] args)
         {
-            CmdUtil.ExecuteCmd($"python \"{args[0]}\" Output");
+            var f = new DefaultLaunchConfig("D:\\Jieji\\NssUnityProj\\nss\\nss_Data\\StreamingAssets\\DefaultLaunchConfig.txt");
+            f.m_dic["DefaultVerLine"] = "123";
+            f.Serialize("D:\\Jieji\\NssUnityProj\\nss\\nss_Data\\StreamingAssets\\DefaultLaunchConfig.txt");
         }
     }
 }

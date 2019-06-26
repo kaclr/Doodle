@@ -9,11 +9,6 @@ namespace Doodle.CommandLineUtils
     {
         public static Command New(MethodInfo method, Func<object> getInstance = null)
         {
-            if (method.ReturnType != typeof(int) && method.ReturnType != typeof(void))
-            {
-                throw new ArgumentException($"New MethodCommand '{method.Name}' failed, Method must return a int or null!");
-            }
-
             var methodParameters = method.GetParameters();
             var command = new Command(method.Name);
             var commandParams = new Param[methodParameters.Length];
@@ -29,7 +24,11 @@ namespace Doodle.CommandLineUtils
                 {// option
                     setOption = true;
 
-                    var option = new Option(parameterConfiguration.optionTemplate, parameterConfiguration.description, OptionType.SingleValue);
+                    var option = new Option(parameterConfiguration.optionTemplate, parameterConfiguration.description, OptionType.SingleValue)
+                    {
+                        required = parameterConfiguration.required
+                    };
+
                     if (parameterInfo.ParameterType == typeof(bool))
                     {
                         if (parameterInfo.DefaultValue != DBNull.Value)
@@ -42,12 +41,18 @@ namespace Doodle.CommandLineUtils
                     else
                     {
                         if (parameterInfo.DefaultValue == DBNull.Value)
-                        {// 普通option必须要有一个默认值
-                            throw new CommandLineException($"New MethodCommand '{method.Name}' failed, parameter '{parameterInfo.Name}' is a option, must has default value!");
-                        }
+                        {// 无参数默认值
 
-                        // 使用函数定义中的默认值
-                        option.defaultValue = () => parameterInfo.DefaultValue;
+                            if (!parameterConfiguration.required)
+                            {// 非required option必须要有一个默认值
+                                throw new CommandLineException($"New MethodCommand '{method.Name}' failed, parameter '{parameterInfo.Name}' is a none required option, must has default value!");
+                            }
+                        }
+                        else
+                        {
+                            // 使用函数定义中的默认值
+                            option.defaultValue = () => parameterInfo.DefaultValue;
+                        }
                     }
 
                     commandParam = option;
@@ -101,7 +106,7 @@ namespace Doodle.CommandLineUtils
                 if (method.ReturnType == typeof(int))
                     return (int)ret;
                 else
-                // void函数都返回0
+                // 其他返回值类型都返回0
                     return 0;
             });
 

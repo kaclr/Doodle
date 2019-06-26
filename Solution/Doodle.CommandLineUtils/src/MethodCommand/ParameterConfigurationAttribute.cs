@@ -19,9 +19,17 @@ namespace Doodle.CommandLineUtils
             private set;
         }
 
+        public bool required
+        {
+            get;
+            set;
+        }
+
         public ParameterConfigurationAttribute(string description)
         {
             this.description = description;
+
+            this.required = false;
         }
     }
 }

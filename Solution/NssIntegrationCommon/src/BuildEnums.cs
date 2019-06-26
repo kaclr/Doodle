@@ -20,10 +20,10 @@ namespace NssIntegrationCommon
     public enum VerLine
     {
         DB,
-        Publish,
         PlayerGroup,
         Experience,
         OB,
+        Predownload,
     }
 
     public enum BuildTarget
