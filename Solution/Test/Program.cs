@@ -38,9 +38,10 @@ namespace Test
 
         static void Main(string[] args)
         {
-            var f = new DefaultLaunchConfig("D:\\Jieji\\NssUnityProj\\nss\\nss_Data\\StreamingAssets\\DefaultLaunchConfig.txt");
-            f.m_dic["DefaultVerLine"] = "123";
-            f.Serialize("D:\\Jieji\\NssUnityProj\\nss\\nss_Data\\StreamingAssets\\DefaultLaunchConfig.txt");
+            SvnUtil.Init("E:\\E_trunk\\Tools\\Sorcery\\ThirdParty\\svn_bin\\svn.exe");
+
+            SvnUtil.Checkout("http://tc-svn.tencent.com/ied/ied_nssclient_rep/nssclient_proj/trunk/Tools/BuildTools/Config",
+                "E:\\test");
         }
     }
 }

@@ -132,7 +132,7 @@ namespace Doodle
         /// <summary>
         /// 路径存在性判断
         /// </summary>
-        public static bool ExistsPath(string path)
+        public static bool Exists(string path)
         {
             if (File.Exists(path))
             {
