@@ -8,5 +8,10 @@ namespace Doodle
         {
             Console.WriteLine(message);
         }
+
+        public static void VerboseLog(object message)
+        {
+            Console.WriteLine(message);
+        }
     }
 }

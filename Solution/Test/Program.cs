@@ -38,10 +38,14 @@ namespace Test
 
         static void Main(string[] args)
         {
-            SvnUtil.Init("E:\\E_trunk\\Tools\\Sorcery\\ThirdParty\\svn_bin\\svn.exe");
+            //SvnUtil.Init("E:\\E_trunk\\Tools\\Sorcery\\ThirdParty\\svn_bin\\svn.exe");
 
-            SvnUtil.Checkout("http://tc-svn.tencent.com/ied/ied_nssclient_rep/nssclient_proj/trunk/Tools/BuildTools/Config",
-                "E:\\test");
+            //SvnUtil.Checkout("http://tc-svn.tencent.com/ied/ied_nssclient_rep/nssclient_proj/trunk/Tools/BuildTools/Config",
+            //    "E:\\test");
+
+            var exe = new Executable("C:\\Program Files\\SlikSvn\\bin\\svn.exe");
+            //Logger.Log(exe.Execute("help"));
+            exe.Execute("sah");
         }
     }
 }

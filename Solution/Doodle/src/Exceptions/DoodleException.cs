@@ -7,6 +7,7 @@ namespace Doodle
 {
     public class DoodleException : Exception
     {
+        public DoodleException() { }
         public DoodleException(string message) : base(message) { }
     }
 }
