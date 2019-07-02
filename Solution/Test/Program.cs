@@ -2,6 +2,8 @@
 using System.IO;
 using Doodle;
 using Doodle.CommandLineUtils;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using NssIntegrationCommon;
 
 namespace Test
@@ -39,30 +41,32 @@ namespace Test
 
         static void Main(string[] args)
         {
-            Logger.SetLogFile("init.log");
-            SvnUtil.Init("E:\\E_trunk\\Tools\\Sorcery\\ThirdParty\\svn_bin\\svn.exe");
+            //Logger.SetLogFile("init.log");
+            //SvnUtil.Init("E:\\E_trunk\\Tools\\Sorcery\\ThirdParty\\svn_bin\\svn.exe");
 
-            CLApp.appName = "Test";
+            //CLApp.appName = "Test";
 
-            var getSvnLastChangedRev = new Command("GetSvnLastChangedRev");
-            var pathOrUrl = getSvnLastChangedRev.AddArgument(new Argument("pathOrUrl", "路径或者URL", false));
-            getSvnLastChangedRev.OnExecute(() =>
-            {
-                Logger.VerboseLog("123");
+            //var getSvnLastChangedRev = new Command("GetSvnLastChangedRev");
+            //var pathOrUrl = getSvnLastChangedRev.AddArgument(new Argument("pathOrUrl", "路径或者URL", false));
+            //getSvnLastChangedRev.OnExecute(() =>
+            //{
+            //    Logger.VerboseLog("123");
 
-                Logger.ToggleConsoleOutput(false);
+            //    Logger.ToggleConsoleOutput(false);
 
-                Logger.VerboseLog("bbb");
+            //    Logger.VerboseLog("bbb");
 
-                var info = SvnUtil.GetSvnInfo((string)pathOrUrl.value);
-                Console.WriteLine(info.lastChangedRev);
-                return 0;
-            });
-            CLApp.AddSubCommand(getSvnLastChangedRev);
+            //    var info = SvnUtil.GetSvnInfo((string)pathOrUrl.value);
+            //    Console.WriteLine(info.lastChangedRev);
+            //    return 0;
+            //});
+            //CLApp.AddSubCommand(getSvnLastChangedRev);
 
-            
 
-            CLApp.Launch(args);
+
+            //CLApp.Launch(args);
+
+            CLApp.Init("test.json");
         }
 
         private static void InitCLApp()
@@ -72,7 +76,7 @@ namespace Test
             SvnUtil.Init("E:\\E_trunk\\Tools\\Sorcery\\ThirdParty\\svn_bin\\svn.exe");
 
             CLApp.appName = "Test";
-            CLApp.Init();
+            //CLApp.Init();
 
             Logger.SetLogFile(null);
         }

@@ -1,4 +1,7 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.IO;
 
 namespace Doodle.CommandLineUtils
 {
@@ -16,24 +19,23 @@ namespace Doodle.CommandLineUtils
         private static readonly Command m_rootCommand = new Command("");
         private static bool s_inited = false;
 
-        public static int Launch(string[] args)
-        {
-            Init();
-
-            return m_rootCommand.Execute(args);
-        }
-
-        public static Command AddSubCommand(Command command)
-        {
-            m_rootCommand.AddSubCommand(command);
-            return command;
-        }
-
-        public static void Init()
+        public static void Init(string envConfigPath)
         {
             if (s_inited)
                 return;
             s_inited = true;
+
+            Dictionary<string, string> dicEnvConfig = null;
+            using (StreamReader f = new StreamReader(envConfigPath))
+            using (JsonTextReader jr = new JsonTextReader(f))
+            {
+                JsonSerializer jsonSerializer = new JsonSerializer();
+                dicEnvConfig = (Dictionary<string, string>)jsonSerializer.Deserialize(jr, typeof(Dictionary<string, string>));
+            }
+
+            SvnUtil.Init(dicEnvConfig["SvnBin"]);
+            
+
 
             SpaceUtil.SetTempSpace("temp");
 
@@ -45,5 +47,20 @@ namespace Doodle.CommandLineUtils
                 return 0;
             });
         }
+
+        public static int Launch(string[] args)
+        {
+            if (!s_inited)
+                throw new Exception($"{nameof(CLApp)} hasn't been inited!");
+
+            return m_rootCommand.Execute(args);
+        }
+
+        public static Command AddSubCommand(Command command)
+        {
+            m_rootCommand.AddSubCommand(command);
+            return command;
+        }
+
     }
 }
