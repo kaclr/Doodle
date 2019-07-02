@@ -1,8 +1,14 @@
 ﻿using System;
 using System.IO;
+using System.Text.RegularExpressions;
 
 namespace Doodle
 {
+    public class SvnInfo
+    {
+        public string url { get; set; }
+    }
+
     public static class SvnUtil
     {
         private static Executable s_svn;
@@ -10,6 +16,12 @@ namespace Doodle
         public static void Init(string svnExePath)
         {
             s_svn = new Executable(svnExePath);
+
+            var version = GetSvnVersion();
+            if (int.Parse(version.Split('.')[1]) <= 8)
+            {
+                throw new DoodleException($"SVN versions must be greater than or equal to 1.9.x, input version is {version}");
+            }
         }
 
         public static void Sync(string localPath, string svnUrl = null, bool removeIgnore = true)
@@ -28,7 +40,48 @@ namespace Doodle
 
             if (string.IsNullOrEmpty(svnUrl))
             {// 从本地目录获取svnUrl
+                svnUrl = GetSvnInfo(localPath).url;
+                Logger.VerboseLog($"Get svn url from localPath: {svnUrl}");
+            }
 
+            Logger.VerboseLog($"svn sync '{localPath}' to '{svnUrl}'\nremoveIgnore:{removeIgnore}");
+
+            // 1. cleanup
+            var arguments = "cleanup --remove-unversioned";
+            if (removeIgnore)
+            {
+                arguments += " --remove-ignored";
+            }
+            arguments += $" \"{localPath}\"";
+            Logger.VerboseLog($"1. svn {arguments}");
+            DoWithCleanup(arguments, localPath);
+
+            // 2. revert
+            arguments = $"revert -R \"{localPath}\"";
+            Logger.VerboseLog($"2. svn {arguments}");
+            DoWithCleanup(arguments, localPath);
+
+            // 3. switch
+            arguments = $"switch --force \"{svnUrl}\" \"{localPath}\"";
+            Logger.VerboseLog($"3. svn {arguments}");
+            DoWithCleanup(arguments, localPath);
+
+            // 4. 检查状态
+            string st = removeIgnore ? s_svn.Execute($"st --no-ignore \"{localPath}\"") : s_svn.Execute($"st \"{localPath}\"");
+            if (!string.IsNullOrEmpty(st))
+            {
+                var lines = st.Split('\n');
+                foreach (var line in lines)
+                {
+                    if (string.IsNullOrEmpty(line))
+                        continue;
+
+                    if (!line.StartsWith("X", StringComparison.Ordinal) &&
+                        !line.StartsWith("Performing status on external item at", StringComparison.Ordinal))
+                    {
+                        throw new DoodleException($"Svn sync failed, svn status is wrong:\n{line}");
+                    }
+                }
             }
         }
 
@@ -36,15 +89,72 @@ namespace Doodle
         {
             Check();
 
-            if (PathUtil.Exists(localPath)) throw new ArgumentException($"'{nameof(localPath)}' is already exists!", nameof(localPath));
+            if (PathUtil.Exists(localPath)) throw new ArgumentException($"'{localPath}' is already exists!", nameof(localPath));
             if (!IsSvnUrl(svnUrl)) throw new ArgumentException($"'{nameof(svnUrl)}' is not a svn url!", nameof(svnUrl));
 
-            s_svn.Execute($"co \"{svnUrl}\" \"{localPath}\"");
+            var arguments = $"co \"{svnUrl}\" \"{localPath}\"";
+            Logger.VerboseLog($"svn {arguments}");
+            s_svn.Execute(arguments);
+        }
+
+        public static SvnInfo GetSvnInfo(string pathOrUrl)
+        {
+            Check();
+
+            if (string.IsNullOrEmpty(pathOrUrl)) throw new ArgumentException($"'{pathOrUrl}' is null or empty!");
+
+            var infoStr = s_svn.Execute($"info \"{pathOrUrl}\"");
+            string urlPattern = "^URL: (.*)$";
+
+            return new SvnInfo()
+            {
+                url = Regex.Match(infoStr, urlPattern, RegexOptions.Multiline).Groups[1].Value.Trim(),
+            };
         }
 
         public static bool IsSvnUrl(string svnUrl)
         {
             return svnUrl.StartsWith("http://");
+        }
+
+        public static string GetSvnVersion()
+        {
+            var str = s_svn.Execute($"--version");
+            var m = Regex.Match(str, "svn, version (.*?) \\(", RegexOptions.Multiline);
+            if (!m.Success)
+            {
+                throw new DoodleException($"Get svn version failed, contents:\n{str}");
+            }
+
+            return m.Groups[1].Value;
+        }
+
+        private static string DoWithCleanup(string arguments, string localPath)
+        {
+            bool hasCleanup = false;
+            for (int i = 0; i < 2; i++)
+            {
+                try
+                {
+                    return s_svn.Execute(arguments);
+                }
+                catch (Exception e)
+                {
+                    if (!hasCleanup)
+                    {// 试着cleanup一下
+                        Logger.VerboseLog("Failed, try cleanup...");
+                        s_svn.Execute($"cleanup \"{localPath}\"");
+
+                        hasCleanup = true;
+                    }
+                    else
+                    {
+                        throw e;
+                    }
+                }
+            }
+
+            throw new DoodleException("Can not be here!");
         }
 
         private static void Check()
