@@ -7,6 +7,7 @@ namespace Doodle
     public class SvnInfo
     {
         public string url { get; set; }
+        public int lastChangedRev { get; set; }
     }
 
     public static class SvnUtil
@@ -104,11 +105,11 @@ namespace Doodle
             if (string.IsNullOrEmpty(pathOrUrl)) throw new ArgumentException($"'{pathOrUrl}' is null or empty!");
 
             var infoStr = s_svn.Execute($"info \"{pathOrUrl}\"");
-            string urlPattern = "^URL: (.*)$";
 
             return new SvnInfo()
             {
-                url = Regex.Match(infoStr, urlPattern, RegexOptions.Multiline).Groups[1].Value.Trim(),
+                url = Regex.Match(infoStr, "^URL: (.*)$", RegexOptions.Multiline).Groups[1].Value.Trim(),
+                lastChangedRev = int.Parse(Regex.Match(infoStr, "^Last Changed Rev: (.*)$", RegexOptions.Multiline).Groups[1].Value),
             };
         }
 

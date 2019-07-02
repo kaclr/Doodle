@@ -29,7 +29,7 @@ namespace Doodle.CommandLineUtils
             return command;
         }
 
-        private static void Init()
+        public static void Init()
         {
             if (s_inited)
                 return;

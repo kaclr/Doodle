@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using Doodle;
 using Doodle.CommandLineUtils;
 using NssIntegrationCommon;
@@ -38,14 +39,42 @@ namespace Test
 
         static void Main(string[] args)
         {
+            Logger.SetLogFile("init.log");
             SvnUtil.Init("E:\\E_trunk\\Tools\\Sorcery\\ThirdParty\\svn_bin\\svn.exe");
-            SvnUtil.Sync("E:\\E_trunk\\Tools\\TDR_res\\Databin", "http://tc-svn.tencent.com/ied/ied_nssclient_rep/nssclient_proj/branches/pc_build/Tools/TDR_res/Databin");
 
-            ////SvnUtil.Checkout("http://tc-svn.tencent.com/ied/ied_nssclient_rep/nssclient_proj/trunk/Tools/BuildTools/Config",
-            ////    "E:\\test");
+            CLApp.appName = "Test";
 
-            //var info = SvnUtil.GetSvnInfo("http://tc-svn.tencent.com/ied/ied_nssclient_rep/nssclient_proj/trunk/Tools/BuildTools/Config");
-            //Logger.Log(info.svnUrl);
+            var getSvnLastChangedRev = new Command("GetSvnLastChangedRev");
+            var pathOrUrl = getSvnLastChangedRev.AddArgument(new Argument("pathOrUrl", "路径或者URL", false));
+            getSvnLastChangedRev.OnExecute(() =>
+            {
+                Logger.VerboseLog("123");
+
+                Logger.ToggleConsoleOutput(false);
+
+                Logger.VerboseLog("bbb");
+
+                var info = SvnUtil.GetSvnInfo((string)pathOrUrl.value);
+                Console.WriteLine(info.lastChangedRev);
+                return 0;
+            });
+            CLApp.AddSubCommand(getSvnLastChangedRev);
+
+            
+
+            CLApp.Launch(args);
+        }
+
+        private static void InitCLApp()
+        {
+            Logger.SetLogFile("init.log");
+
+            SvnUtil.Init("E:\\E_trunk\\Tools\\Sorcery\\ThirdParty\\svn_bin\\svn.exe");
+
+            CLApp.appName = "Test";
+            CLApp.Init();
+
+            Logger.SetLogFile(null);
         }
     }
 }
