@@ -120,8 +120,8 @@ namespace Doodle
 
         public static string GetSvnVersion()
         {
-            var str = s_svn.Execute($"--version");
-            var m = Regex.Match(str, "svn, version (.*?) \\(", RegexOptions.Multiline);
+            var str = s_svn.Execute($"--version --quiet");
+            var m = Regex.Match(str, "(\\d+\\.\\d+\\.\\d+)");
             if (!m.Success)
             {
                 throw new DoodleException($"Get svn version failed, contents:\n{str}");

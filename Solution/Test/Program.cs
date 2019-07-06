@@ -46,39 +46,42 @@ namespace Test
 
             //CLApp.appName = "Test";
 
-            //var getSvnLastChangedRev = new Command("GetSvnLastChangedRev");
-            //var pathOrUrl = getSvnLastChangedRev.AddArgument(new Argument("pathOrUrl", "路径或者URL", false));
-            //getSvnLastChangedRev.OnExecute(() =>
-            //{
-            //    Logger.VerboseLog("123");
-
-            //    Logger.ToggleConsoleOutput(false);
-
-            //    Logger.VerboseLog("bbb");
-
-            //    var info = SvnUtil.GetSvnInfo((string)pathOrUrl.value);
-            //    Console.WriteLine(info.lastChangedRev);
-            //    return 0;
-            //});
             //CLApp.AddSubCommand(getSvnLastChangedRev);
 
 
 
             //CLApp.Launch(args);
 
-            CLApp.Init("test.json");
+            CLApp.Init("Test", "test.json");
+
+            var getSvnLastChangedRev = new Command("GetSvnLastChangedRev");
+            var pathOrUrl = getSvnLastChangedRev.AddArgument(new Argument("pathOrUrl", "路径或者URL", false));
+            getSvnLastChangedRev.OnExecute(() =>
+            {
+
+                //Logger.ToggleConsoleOutput(false);
+
+                Logger.VerboseLog("bbb");
+
+                var info = SvnUtil.GetSvnInfo((string)pathOrUrl.value);
+                Console.WriteLine(info.lastChangedRev);
+                return 0;
+            });
+            CLApp.AddSubCommand(getSvnLastChangedRev);
+
+            CLApp.Launch(args);
         }
 
         private static void InitCLApp()
         {
-            Logger.SetLogFile("init.log");
+            Logger.TurnOnLogFile("init.log");
 
             SvnUtil.Init("E:\\E_trunk\\Tools\\Sorcery\\ThirdParty\\svn_bin\\svn.exe");
 
             CLApp.appName = "Test";
             //CLApp.Init();
 
-            Logger.SetLogFile(null);
+            Logger.TurnOffLogFile();
         }
     }
 }
