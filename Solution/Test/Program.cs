@@ -2,9 +2,7 @@
 using System.IO;
 using Doodle;
 using Doodle.CommandLineUtils;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using NssIntegrationCommon;
+using NssIntegration;
 
 namespace Test
 {
@@ -52,36 +50,26 @@ namespace Test
 
             //CLApp.Launch(args);
 
-            CLApp.Init("Test", "test.json");
+            //CLApp.appName = "Test";
+            var envConfigOpt = CLApp.AddRootCommandOption(new Option("-envConfig", "环境配置文件", OptionType.SingleValue));
+            CLApp.OnRootCommandExecute(() =>
+            {
+                Console.WriteLine($"OnRootCommandExecute, envConfig: {envConfigOpt.value}");
+            });
+            
 
             var getSvnLastChangedRev = new Command("GetSvnLastChangedRev");
             var pathOrUrl = getSvnLastChangedRev.AddArgument(new Argument("pathOrUrl", "路径或者URL", false));
             getSvnLastChangedRev.OnExecute(() =>
             {
 
-                //Logger.ToggleConsoleOutput(false);
+                Console.WriteLine($"GetSvnLastChangedRev!");
 
-                Logger.VerboseLog("bbb");
-
-                var info = SvnUtil.GetSvnInfo((string)pathOrUrl.value);
-                Console.WriteLine(info.lastChangedRev);
                 return 0;
             });
-            CLApp.AddSubCommand(getSvnLastChangedRev);
+            CLApp.AddCommand(getSvnLastChangedRev);
 
             CLApp.Launch(args);
-        }
-
-        private static void InitCLApp()
-        {
-            Logger.TurnOnLogFile("init.log");
-
-            SvnUtil.Init("E:\\E_trunk\\Tools\\Sorcery\\ThirdParty\\svn_bin\\svn.exe");
-
-            CLApp.appName = "Test";
-            //CLApp.Init();
-
-            Logger.TurnOffLogFile();
         }
     }
 }

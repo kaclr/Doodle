@@ -31,6 +31,11 @@ namespace Doodle
             return Path.Combine(s_tempSpaceRoot, path);
         }
 
+        public static string GetBasePath(string path = "")
+        {
+            return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, path);
+        }
+
         public static string NewTempDir()
         {
             if (s_tempSpaceRoot == null)

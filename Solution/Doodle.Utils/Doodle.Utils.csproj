@@ -3,6 +3,11 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
     <RootNamespace>Doodle</RootNamespace>
+    <AssemblyName>Doodle.Utils</AssemblyName>
   </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Doodle\Doodle.csproj" />
+  </ItemGroup>
 
 </Project>

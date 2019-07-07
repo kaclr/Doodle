@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -11,79 +10,72 @@ namespace Doodle.CommandLineUtils
     /// </summary>
     public static class CLApp
     {
-        public static string appName
+        private static string appName
         {
-            get => m_rootCommand.name;
-            set => m_rootCommand.name = value;
+            get => s_rootCommand.name;
+            set => s_rootCommand.name = value;
         }
 
-        private static string clAppInitLog
-        {
-            get;
-            set;
-        }
-
-        private static readonly Command m_rootCommand = new Command("");
+        private static readonly Command s_rootCommand = new Command("");
+        private static Action s_onRootExecute;
         private static bool s_inited = false;
 
-        public static void Init(string appName, string envConfig)
+        public static void Init(string appName)
         {
             if (s_inited)
                 return;
             s_inited = true;
 
-            SpaceUtil.SetTempSpace("temp");
+            bool consoleOutputingPrevious = Logger.consoleOutputing;
+            if (consoleOutputingPrevious)
+                Logger.ToggleConsoleOutput(false);
 
-            // 初始化log文件的路径
-            clAppInitLog = SpaceUtil.GetTempPath($"CLAppInitLog_{Process.GetCurrentProcess().Id}_{DateTime.Now.ToString("yyyyMMddhhmmss")}.log");
-            Logger.TurnOnLogFile(clAppInitLog, false);
+            var logFileOpt = s_rootCommand.AddOption(new Option("-l|--logFile", "日志文件", OptionType.SingleValue));
+            var verboseOpt = s_rootCommand.AddOption(new Option("-v|--verbose", "输出冗余", OptionType.NoValue));
 
-            CLApp.appName = appName;
-
-            if (!string.IsNullOrEmpty(envConfig))
+            s_rootCommand.OnExecute(() =>
             {
-                Dictionary<string, string> dicEnvConfig = null;
-                using (StreamReader f = new StreamReader(envConfig))
-                using (JsonTextReader jr = new JsonTextReader(f))
+                bool consoleOutputingLast = Logger.consoleOutputing;
+                if (consoleOutputingLast)
+                    Logger.ToggleConsoleOutput(false);
+
+                if (verboseOpt.isSet)
                 {
-                    JsonSerializer jsonSerializer = new JsonSerializer();
-                    dicEnvConfig = (Dictionary<string, string>)jsonSerializer.Deserialize(jr, typeof(Dictionary<string, string>));
+                    Logger.verbosity = Logger.Verbosity.Verbose;
                 }
 
-                SvnUtil.Init(GetEnvConfigValue(envConfig, dicEnvConfig, "SvnBin"));
-            }
-
-            var logFileParam = m_rootCommand.AddOption(new Option("-l|--logFile", "日志文件", OptionType.SingleValue));
-            var verboseParam = m_rootCommand.AddOption(new Option("-v|--verbose", "输出冗余", OptionType.NoValue));
- 
-            m_rootCommand.OnExecute(() =>
-            {
-                Logger.TurnOnLogFile(clAppInitLog);
-
                 Logger.VerboseLog("CLApp initializing...");
-                Logger.VerboseLog($"logFile: {logFileParam.value}");
-                Logger.VerboseLog($"verbose: {verboseParam.isSet}");
+                Logger.VerboseLog($"logFile: {logFileOpt.value}");
+                Logger.VerboseLog($"verbose: {verboseOpt.isSet}");
 
                 bool hasUserLogFile = false;
-                string logFile = (string)logFileParam.value;
+                string logFile = (string)logFileOpt.value;
                 if (!string.IsNullOrEmpty(logFile))
                 {
                     Logger.TurnOnLogFile(logFile);
                     hasUserLogFile = true;
                 }
 
-                if (verboseParam.isSet)
-                {
-                    Logger.verbosity = Logger.Verbosity.Verbose;
-                }
+                if (consoleOutputingLast && !hasUserLogFile)
+                    Logger.ToggleConsoleOutput(true);
 
-                if (!hasUserLogFile)
-                    Logger.TurnOffLogFile();
+                s_onRootExecute?.Invoke();
 
                 return 0;
             });
 
-            Logger.TurnOffLogFile();
+            if (consoleOutputingPrevious)
+                Logger.ToggleConsoleOutput(true);
+        }
+
+        public static Option AddRootCommandOption(Option option)
+        {
+            return s_rootCommand.AddOption(option);
+        }
+
+        public static void OnRootCommandExecute(Action onExecute)
+        {
+            s_onRootExecute = onExecute;
         }
 
         public static int Launch(string[] args)
@@ -91,22 +83,14 @@ namespace Doodle.CommandLineUtils
             if (!s_inited)
                 throw new Exception($"{nameof(CLApp)} hasn't been inited!");
 
-            return m_rootCommand.Execute(args);
+            return s_rootCommand.Execute(args);
         }
 
-        public static Command AddSubCommand(Command command)
+        public static Command AddCommand(Command command)
         {
-            m_rootCommand.AddSubCommand(command);
+            s_rootCommand.AddSubCommand(command);
             return command;
         }
 
-        private static string GetEnvConfigValue(string envConfigFile, Dictionary<string, string> dicEnvConfig, string needKey)
-        {
-            if (!dicEnvConfig.TryGetValue(needKey, out string value))
-            {
-                throw new DoodleException($"Env config '{envConfigFile}' is missing key of '{needKey}'!");
-            }
-            return value;
-        }
     }
 }

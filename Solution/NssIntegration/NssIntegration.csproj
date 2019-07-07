@@ -5,9 +5,18 @@
     <TargetFramework>netcoreapp2.0</TargetFramework>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <OutputPath></OutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
+  </ItemGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\Doodle.CLFramework\Doodle.CLFramework.csproj" />
     <ProjectReference Include="..\Doodle.CommandLineUtils\Doodle.CommandLineUtils.csproj" />
+    <ProjectReference Include="..\Doodle.Utils\Doodle.Utils.csproj" />
     <ProjectReference Include="..\Doodle\Doodle.csproj" />
     <ProjectReference Include="..\NssIntegrationCommon\NssIntegration.Common.csproj" />
   </ItemGroup>

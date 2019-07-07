@@ -20,17 +20,19 @@ namespace Doodle
             set;
         }
 
+        public static bool consoleOutputing { get; private set; }
+        public static bool hasLogFile { get; private set; }
+
         private static StreamWriter s_outLogFile;
         private static StreamWriter s_errLogFile;
-        private static bool s_consoleOutputing;
-        private static bool s_hasLogFile;
+        
 
         static Logger()
         {
             s_outLogFile = new StreamWriter(Console.OpenStandardOutput()) { AutoFlush = true };
             s_errLogFile = new StreamWriter(Console.OpenStandardError()) { AutoFlush = true };
-            s_consoleOutputing = true;
-            s_hasLogFile = false;
+            consoleOutputing = true;
+            hasLogFile = false;
 
             verbosity = Verbosity.Log;
         }
@@ -39,7 +41,7 @@ namespace Doodle
         {
             if (string.IsNullOrEmpty(logFile)) throw new ArgumentException($"{nameof(logFile)} is empty!", nameof(logFile));
 
-            if (s_hasLogFile)
+            if (hasLogFile)
             {
                 s_outLogFile.Flush();
                 s_errLogFile.Flush();
@@ -52,13 +54,13 @@ namespace Doodle
 
             s_outLogFile = new StreamWriter(f) { AutoFlush = true };
             s_errLogFile = new StreamWriter(f) { AutoFlush = true };
-            s_hasLogFile = true;
-            s_consoleOutputing = false;
+            hasLogFile = true;
+            consoleOutputing = false;
         }
 
         public static void TurnOffLogFile()
         {
-            if (s_hasLogFile)
+            if (hasLogFile)
             {
                 s_outLogFile.Flush();
                 s_errLogFile.Flush();
@@ -68,16 +70,16 @@ namespace Doodle
 
                 s_outLogFile = new StreamWriter(Console.OpenStandardOutput()) { AutoFlush = true };
                 s_errLogFile = new StreamWriter(Console.OpenStandardError()) { AutoFlush = true };
-                s_hasLogFile = false;
-                s_consoleOutputing = true;
+                hasLogFile = false;
+                consoleOutputing = true;
             }
         }
 
         public static void ToggleConsoleOutput(bool on)
         {
-            if (on && !s_consoleOutputing)
+            if (on && !consoleOutputing)
             {// 打开
-                if (s_hasLogFile)
+                if (hasLogFile)
                 {
                     s_outLogFile.Flush();
                     s_errLogFile.Flush();
@@ -88,15 +90,16 @@ namespace Doodle
 
                 s_outLogFile = new StreamWriter(Console.OpenStandardOutput()) { AutoFlush = true };
                 s_errLogFile = new StreamWriter(Console.OpenStandardError()) { AutoFlush = true };
-                s_hasLogFile = false;
-                s_consoleOutputing = true;
+                hasLogFile = false;
+                consoleOutputing = true;
             }
-            else if (!on && s_consoleOutputing)
+            else if (!on && consoleOutputing)
             {// 关闭
                 s_outLogFile = null;
                 s_errLogFile = null;
-                s_hasLogFile = false;
-                s_consoleOutputing = false;
+
+                hasLogFile = false;
+                consoleOutputing = false;
             }
         }
 

@@ -12,22 +12,33 @@ namespace Doodle
 
     public static class SvnUtil
     {
+        private static Func<string> s_onGetSvnExe;
         private static Executable s_svn;
 
-        public static void Init(string svnExePath)
+        public static void Init(Func<string> onGetSvnExe)
         {
-            s_svn = new Executable(svnExePath);
+            if (onGetSvnExe == null) throw new ArgumentNullException(nameof(onGetSvnExe));
+            s_onGetSvnExe = onGetSvnExe;
+        }
 
-            var version = GetSvnVersion();
+        public static void Init(string svnExe)
+        {
+            if (s_svn != null) return;
+
+            if (string.IsNullOrEmpty(svnExe)) throw new ArgumentException($"{nameof(svnExe)} is empty!", nameof(svnExe));
+
+            s_svn = new Executable(svnExe);
+
+            var version = GetSvnVersionInner();
             if (int.Parse(version.Split('.')[1]) <= 8)
             {
-                throw new DoodleException($"SVN versions must be greater than or equal to 1.9.x, input version is {version}");
+                throw new DoodleException($"SVN version must be greater than or equal to 1.9.x, input version is {version}");
             }
         }
 
         public static void Sync(string localPath, string svnUrl = null, bool removeIgnore = true)
         {
-            Check();
+            InitInner();
 
             if (File.Exists(localPath)) throw new ArgumentException($"'{nameof(localPath)}' can't be a file!", nameof(localPath));
 
@@ -88,7 +99,7 @@ namespace Doodle
 
         public static void Checkout(string svnUrl, string localPath)
         {
-            Check();
+            InitInner();
 
             if (PathUtil.Exists(localPath)) throw new ArgumentException($"'{localPath}' is already exists!", nameof(localPath));
             if (!IsSvnUrl(svnUrl)) throw new ArgumentException($"'{nameof(svnUrl)}' is not a svn url!", nameof(svnUrl));
@@ -100,7 +111,7 @@ namespace Doodle
 
         public static SvnInfo GetSvnInfo(string pathOrUrl)
         {
-            Check();
+            InitInner();
 
             if (string.IsNullOrEmpty(pathOrUrl)) throw new ArgumentException($"'{pathOrUrl}' is null or empty!");
 
@@ -119,6 +130,13 @@ namespace Doodle
         }
 
         public static string GetSvnVersion()
+        {
+            InitInner();
+
+            return GetSvnVersionInner();
+        }
+
+        public static string GetSvnVersionInner()
         {
             var str = s_svn.Execute($"--version --quiet");
             var m = Regex.Match(str, "(\\d+\\.\\d+\\.\\d+)");
@@ -158,12 +176,10 @@ namespace Doodle
             throw new DoodleException("Can not be here!");
         }
 
-        private static void Check()
+        private static void InitInner()
         {
-            if (s_svn == null)
-            {
-                throw new DoodleException($"'{nameof(SvnUtil)}' has not be Init!");
-            }
+            if (s_onGetSvnExe == null) throw new DoodleException($"{nameof(SvnUtil)} hasn't been Inited!");
+            Init(s_onGetSvnExe());
         }
     }
 }
