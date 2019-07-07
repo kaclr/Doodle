@@ -1,6 +1,6 @@
 using System;
 
-namespace NssIntegrationCommon
+namespace NssIntegration
 {
     public class Procedure
     {

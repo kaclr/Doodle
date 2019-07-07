@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace NssIntegrationCommon
+namespace NssIntegration
 {
     public static class DatabinUtil
     {
