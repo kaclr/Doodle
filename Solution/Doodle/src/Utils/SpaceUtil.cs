@@ -10,6 +10,11 @@ namespace Doodle
     {
         private static string s_tempSpaceRoot;
 
+        static SpaceUtil()
+        {
+            s_tempSpaceRoot = Path.GetTempPath();
+        }
+
         public static void SetTempSpace(string path)
         {
             if (string.IsNullOrEmpty(path)) throw new ArgumentNullException(path);
@@ -25,9 +30,6 @@ namespace Doodle
 
         public static string GetTempPath(string path = "")
         {
-            if (s_tempSpaceRoot == null)
-                throw new DoodleException($"Don't have temp space, you must set it by 'SetTempSpace'!");
-
             return Path.Combine(s_tempSpaceRoot, path);
         }
 
@@ -38,9 +40,6 @@ namespace Doodle
 
         public static string NewTempDir()
         {
-            if (s_tempSpaceRoot == null)
-                throw new DoodleException($"Don't have temp space, you must set it by 'SetTempSpace'!");
-
             var dir = Path.Combine(s_tempSpaceRoot, Guid.NewGuid().ToString().Replace("-", ""));
             Directory.CreateDirectory(Path.Combine(s_tempSpaceRoot, dir));
             return dir;

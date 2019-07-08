@@ -47,8 +47,9 @@ namespace Test
             //File.WriteAllText(SpaceUtil.GetTempPath("tmp"), "echo 123");
             //bin.Execute($"\"{SpaceUtil.GetTempPath("tmp")}\"");
 
-            File.WriteAllText(SpaceUtil.GetTempPath("tmp.bat"), "echo 123");
-            var bin = new Executable(SpaceUtil.GetTempPath("tmp.bat")) { printToVerbose = true };
+            File.WriteAllText(SpaceUtil.GetTempPath("tmp.bat"), $"@echo off{Environment.NewLine}echo 123");
+            var bin = new Executable("cmd") { printToVerbose = true };
+            bin.Execute($"/c \"{SpaceUtil.GetTempPath("tmp.bat")}\"");
         }
     }
 }

@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Doodle
 {
-    public class Executable
+    public class Executable : IExecutable
     {
         public string path
         {
