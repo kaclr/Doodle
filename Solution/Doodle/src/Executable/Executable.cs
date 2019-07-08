@@ -8,37 +8,27 @@ namespace Doodle
 {
     public class Executable : IExecutable
     {
-        public string path
-        {
-            get;
-            private set;
-        }
+        public bool printToVerbose { get; set; } = true;
 
-        public bool printToVerbose
-        {
-            get;
-            set;
-        }
-
+        private string m_exePath;
         protected StringBuilder m_stderr;
         protected StringBuilder m_stdout;
 
-        public Executable(string path)
+        public Executable(string exePath)
         {
-            this.path = path;
-            printToVerbose = true;
+            this.m_exePath = exePath;
         }
 
         public string Execute(string arguments)
         {
-            if (ExecuteImpl(arguments, out string stdout, out string stderr) != 0)
+            if (ExecuteImpl(m_exePath, arguments, out string stdout, out string stderr) != 0)
             {
-                throw new DoodleException($"Execute '{path} {arguments}' failed, detail as follows:\n{stderr}");
+                throw new DoodleException($"Execute '{m_exePath} {arguments}' failed, detail as follows:\n{stderr}");
             }
             return stdout;
         }
 
-        private int ExecuteImpl(string arguments, out string stdout, out string stderr)
+        private int ExecuteImpl(string exePath, string arguments, out string stdout, out string stderr)
         {
             stdout = null;
             stderr = null;
@@ -46,7 +36,7 @@ namespace Doodle
             Process p = new Process();
             try
             {
-                p.StartInfo.FileName = path;
+                p.StartInfo.FileName = exePath;
                 p.StartInfo.Arguments = arguments;
                 p.StartInfo.CreateNoWindow = true;
                 p.StartInfo.UseShellExecute = false;

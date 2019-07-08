@@ -17,7 +17,7 @@ namespace Doodle
 
         public static void SetTempSpace(string path)
         {
-            if (string.IsNullOrEmpty(path)) throw new ArgumentNullException(path);
+            if (string.IsNullOrEmpty(path)) throw new ArgumentException($"'{nameof(path)}' is empty!");
             if (File.Exists(path)) throw new ArgumentException($"Temp space can not be a file!", nameof(path));
 
             if (!Directory.Exists(path))

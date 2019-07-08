@@ -12,14 +12,6 @@ namespace Doodle
             set => s_logFiles[0].verbosity = value;
         }
 
-        public static bool consoleOutputing { get; private set; }
-        public static bool hasLogFile { get; private set; }
-
-        private static StreamWriter s_outLogFile;
-        private static StreamWriter s_errLogFile;
-
-        private static LogFile s_console;
-
         private static readonly Dictionary<string, int> s_dicLogFileIndex = new Dictionary<string, int>();
         private static readonly List<LogFile> s_logFiles = new List<LogFile>();
         private static readonly List<bool> s_logFileOnOff = new List<bool>();
@@ -29,11 +21,6 @@ namespace Doodle
 
         static Logger()
         {
-            s_outLogFile = new StreamWriter(Console.OpenStandardOutput()) { AutoFlush = true };
-            s_errLogFile = new StreamWriter(Console.OpenStandardError()) { AutoFlush = true };
-            consoleOutputing = true;
-            hasLogFile = false;
-
             s_logFiles.Add(new LogFile(Console.OpenStandardOutput(), Console.OpenStandardError()));
             s_logFileOnOff.Add(true); // 默认开启
 
