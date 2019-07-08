@@ -39,37 +39,20 @@ namespace Test
 
         static void Main(string[] args)
         {
-            //Logger.SetLogFile("init.log");
-            //SvnUtil.Init("E:\\E_trunk\\Tools\\Sorcery\\ThirdParty\\svn_bin\\svn.exe");
+            Logger.verbosity = Verbosity.Verbose;
+            Logger.Log("111");
 
-            //CLApp.appName = "Test";
+            Logger.SetLogFile("verbose", new LogFile("verbose.log") { verbosity = Verbosity.Verbose });
 
-            //CLApp.AddSubCommand(getSvnLastChangedRev);
+            Logger.VerboseLog("222");
 
+            Logger.BeginMuteConsoleOutput();
 
+            Logger.Log("333");
 
-            //CLApp.Launch(args);
+            Logger.EndMuteConsoleOutput();
 
-            //CLApp.appName = "Test";
-            var envConfigOpt = CLApp.AddRootCommandOption(new Option("-envConfig", "环境配置文件", OptionType.SingleValue));
-            CLApp.OnRootCommandExecute(() =>
-            {
-                Console.WriteLine($"OnRootCommandExecute, envConfig: {envConfigOpt.value}");
-            });
-            
-
-            var getSvnLastChangedRev = new Command("GetSvnLastChangedRev");
-            var pathOrUrl = getSvnLastChangedRev.AddArgument(new Argument("pathOrUrl", "路径或者URL", false));
-            getSvnLastChangedRev.OnExecute(() =>
-            {
-
-                Console.WriteLine($"GetSvnLastChangedRev!");
-
-                return 0;
-            });
-            CLApp.AddCommand(getSvnLastChangedRev);
-
-            CLApp.Launch(args);
+            Logger.Log("444");
         }
     }
 }

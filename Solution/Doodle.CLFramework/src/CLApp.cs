@@ -26,46 +26,38 @@ namespace Doodle.CommandLineUtils
                 return;
             s_inited = true;
 
-            bool consoleOutputingPrevious = Logger.consoleOutputing;
-            if (consoleOutputingPrevious)
-                Logger.ToggleConsoleOutput(false);
+            Logger.BeginMuteConsoleOutput();
 
             var logFileOpt = s_rootCommand.AddOption(new Option("-l|--logFile", "日志文件", OptionType.SingleValue));
             var verboseOpt = s_rootCommand.AddOption(new Option("-v|--verbose", "输出冗余", OptionType.NoValue));
 
             s_rootCommand.OnExecute(() =>
             {
-                bool consoleOutputingLast = Logger.consoleOutputing;
-                if (consoleOutputingLast)
-                    Logger.ToggleConsoleOutput(false);
+                Logger.BeginMuteConsoleOutput();
 
                 if (verboseOpt.isSet)
                 {
-                    Logger.verbosity = Logger.Verbosity.Verbose;
+                    Logger.verbosity = Verbosity.Verbose;
                 }
 
                 Logger.VerboseLog("CLApp initializing...");
                 Logger.VerboseLog($"logFile: {logFileOpt.value}");
                 Logger.VerboseLog($"verbose: {verboseOpt.isSet}");
 
-                bool hasUserLogFile = false;
                 string logFile = (string)logFileOpt.value;
                 if (!string.IsNullOrEmpty(logFile))
                 {
-                    Logger.TurnOnLogFile(logFile);
-                    hasUserLogFile = true;
+                    Logger.SetLogFile("UserLog", new LogFile(logFile) { verbosity = Verbosity.Verbose });
                 }
 
-                if (consoleOutputingLast && !hasUserLogFile)
-                    Logger.ToggleConsoleOutput(true);
+                Logger.EndMuteConsoleOutput();
 
                 s_onRootExecute?.Invoke();
 
                 return 0;
             });
 
-            if (consoleOutputingPrevious)
-                Logger.ToggleConsoleOutput(true);
+            Logger.EndMuteConsoleOutput();
         }
 
         public static Option AddRootCommandOption(Option option)

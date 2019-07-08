@@ -14,7 +14,8 @@ namespace NssIntegration
             SpaceUtil.SetTempSpace("temp");
 
             var logFile = SpaceUtil.GetTempPath($"NssIntegrationStart_{DateTime.Now.ToString("yyyyMMddhhmmss")}.log");
-            Logger.TurnOnLogFile(logFile);
+            Logger.SetLogFile("NssIntegrationStart", new LogFile(logFile));
+            Logger.BeginMuteConsoleOutput();
 
             CLApp.Init("NssIntegration");
 
@@ -27,7 +28,7 @@ namespace NssIntegration
             JsonSerializer jsonSerializer = new JsonSerializer();
             Dictionary<string, string> dicEnvConfig = (Dictionary<string, string>)jsonSerializer.Deserialize(new StreamReader(envConfigPath), typeof(Dictionary<string, string>));
 
-            SvnUtil.Init(() => GetEnv(envConfigPath, dicEnvConfig, "SvnExe"));
+            SvnUtil.Init(() => GetEnv(envConfigPath, dicEnvConfig, "SvnBin"));
 
             CLApp.AddCommand(new Command("Test")).OnExecute(() =>
             {
@@ -35,7 +36,8 @@ namespace NssIntegration
                 return 0;
             });
 
-            Logger.TurnOffLogFile();
+            Logger.SetLogFile("NssIntegrationStart", null);
+            Logger.EndMuteConsoleOutput();
 
             CLApp.Launch(args);
         }
