@@ -39,20 +39,16 @@ namespace Test
 
         static void Main(string[] args)
         {
+            SpaceUtil.SetTempSpace("temp");
+
             Logger.verbosity = Verbosity.Verbose;
-            Logger.Log("111");
 
-            Logger.SetLogFile("verbose", new LogFile("verbose.log") { verbosity = Verbosity.Verbose });
+            //var bin = new Executable("cmd") { printToVerbose = true };
+            //File.WriteAllText(SpaceUtil.GetTempPath("tmp"), "echo 123");
+            //bin.Execute($"\"{SpaceUtil.GetTempPath("tmp")}\"");
 
-            Logger.VerboseLog("222");
-
-            Logger.BeginMuteConsoleOutput();
-
-            Logger.Log("333");
-
-            Logger.EndMuteConsoleOutput();
-
-            Logger.Log("444");
+            File.WriteAllText(SpaceUtil.GetTempPath("tmp.bat"), "echo 123");
+            var bin = new Executable(SpaceUtil.GetTempPath("tmp.bat")) { printToVerbose = true };
         }
     }
 }

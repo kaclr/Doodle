@@ -6,7 +6,7 @@ namespace NssIntegration
 {
     static class BuildProcedure
     {
-        public static void AssemblyApk(string apkFile, string ifsFile)
+        public static void AssemblyApk(string apkPath, string ifsPath)
         {
 
         }

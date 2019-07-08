@@ -25,10 +25,7 @@ namespace Doodle
 
         public Executable(string path)
         {
-            if (!File.Exists(path)) throw new NotFileException(path, nameof(path));
-
             this.path = path;
-
             printToVerbose = true;
         }
 
