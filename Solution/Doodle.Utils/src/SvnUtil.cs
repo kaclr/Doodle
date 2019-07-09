@@ -13,14 +13,27 @@ namespace Doodle
     public static class SvnUtil
     {
         private static Func<string> s_onGetSvnExe;
-
-        [ThreadStatic]
         private static Executable s_svn;
 
         public static void Init(Func<string> onGetSvnExe)
         {
             if (onGetSvnExe == null) throw new ArgumentNullException(nameof(onGetSvnExe));
             s_onGetSvnExe = onGetSvnExe;
+        }
+
+        public static void Init(string svnExe)
+        {
+            if (s_svn != null) return;
+
+            if (string.IsNullOrEmpty(svnExe)) throw new ArgumentException($"{nameof(svnExe)} is empty!", nameof(svnExe));
+
+            s_svn = new Executable(svnExe);
+
+            var version = GetSvnVersionInner();
+            if (int.Parse(version.Split('.')[1]) <= 8)
+            {
+                throw new DoodleException($"SVN version must be greater than or equal to 1.9.x, input version is {version}");
+            }
         }
 
         public static void Sync(string localPath, string svnUrl = null, bool removeIgnore = true)
@@ -66,7 +79,7 @@ namespace Doodle
             DoWithCleanup(arguments, localPath);
 
             // 4. 检查状态
-            string st = removeIgnore ? s_svn.Execute($"st --no-ignore \"{localPath}\"") : s_svn.Execute($"st \"{localPath}\"");
+            string st = removeIgnore ? s_svn.ExecuteOut($"st --no-ignore \"{localPath}\"") : s_svn.ExecuteOut($"st \"{localPath}\"");
             if (!string.IsNullOrEmpty(st))
             {
                 var lines = st.Split('\n');
@@ -93,7 +106,7 @@ namespace Doodle
 
             var arguments = $"co \"{svnUrl}\" \"{localPath}\"";
             Logger.VerboseLog($"svn {arguments}");
-            s_svn.Execute(arguments);
+            s_svn.ExecuteOut(arguments);
         }
 
         public static SvnInfo GetSvnInfo(string pathOrUrl)
@@ -102,7 +115,7 @@ namespace Doodle
 
             if (string.IsNullOrEmpty(pathOrUrl)) throw new ArgumentException($"'{pathOrUrl}' is null or empty!");
 
-            var infoStr = s_svn.Execute($"info \"{pathOrUrl}\"");
+            var infoStr = s_svn.ExecuteOut($"info \"{pathOrUrl}\"");
 
             return new SvnInfo()
             {
@@ -125,7 +138,7 @@ namespace Doodle
 
         public static string GetSvnVersionInner()
         {
-            var str = s_svn.Execute($"--version --quiet");
+            var str = s_svn.ExecuteOut($"--version --quiet");
             var m = Regex.Match(str, "(\\d+\\.\\d+\\.\\d+)");
             if (!m.Success)
             {
@@ -142,14 +155,14 @@ namespace Doodle
             {
                 try
                 {
-                    return s_svn.Execute(arguments);
+                    return s_svn.ExecuteOut(arguments);
                 }
                 catch (Exception e)
                 {
                     if (!hasCleanup)
                     {// 试着cleanup一下
                         Logger.VerboseLog("Failed, try cleanup...");
-                        s_svn.Execute($"cleanup \"{localPath}\"");
+                        s_svn.ExecuteOut($"cleanup \"{localPath}\"");
 
                         hasCleanup = true;
                     }
@@ -165,19 +178,8 @@ namespace Doodle
 
         private static void InitInner()
         {
-            if (s_svn != null) return;
             if (s_onGetSvnExe == null) throw new DoodleException($"{nameof(SvnUtil)} hasn't been Inited!");
-
-            var svnBin = s_onGetSvnExe();
-            if (string.IsNullOrEmpty(svnBin)) throw new ArgumentException($"{nameof(svnBin)} is empty!", nameof(svnBin));
-
-            s_svn = new Executable(svnBin);
-
-            var version = GetSvnVersionInner();
-            if (int.Parse(version.Split('.')[1]) <= 8)
-            {
-                throw new DoodleException($"SVN version must be greater than or equal to 1.9.x, input version is {version}");
-            }
+            Init(s_onGetSvnExe());
         }
     }
 }

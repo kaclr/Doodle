@@ -12,7 +12,7 @@ namespace Doodle
 
         public Script(string script)
         {
-            if (Environment.OSVersion.Platform == PlatformID.Win32NT)
+            if (DoodleEnv.curPlatform == Platform.Windows)
             {
                 m_interpreter = new Executable("cmd");
             }
@@ -24,20 +24,62 @@ namespace Doodle
             m_scriptPath = GetScriptPath(script);
         }
 
-        public string Execute(string arguments)
+        public string ExecuteOut(string arguments)
         {
-            return m_interpreter.Execute(GetFinalArguments(arguments));
+            return m_interpreter.ExecuteOut(GetFinalArguments(arguments));
+        }
+
+        public string ExecuteErr(string arguments)
+        {
+            return m_interpreter.ExecuteErr(GetFinalArguments(arguments));
+        }
+
+        public void Execute(string arguments)
+        {
+            ExecuteOut(arguments);
+        }
+
+        public void Execute(string arguments, out string stdout, out string stderr)
+        {
+            m_interpreter.Execute(GetFinalArguments(arguments), out stdout, out stderr);
+        }
+
+        public int ExecuteNoThrow(string arguments)
+        {
+            return m_interpreter.ExecuteNoThrow(GetFinalArguments(arguments));
+        }
+
+        public int ExecuteNoThrow(string arguments, out string stdout)
+        {
+            return m_interpreter.ExecuteNoThrow(GetFinalArguments(arguments), out stdout);
+        }
+
+        public int ExecuteNoThrow(string arguments, out string stdout, out string stderr)
+        {
+            return m_interpreter.ExecuteNoThrow(GetFinalArguments(arguments), out stdout, out stderr);
         }
 
         private string GetFinalArguments(string arguments)
         {
-            if (Environment.OSVersion.Platform == PlatformID.Win32NT)
+            if (DoodleEnv.curPlatform == Platform.Windows)
             {
-                return $"/c \"{m_scriptPath}\" {arguments}";
+                var finalArguments = $"/c \"{m_scriptPath}";
+                if (!string.IsNullOrEmpty(arguments))
+                {
+                    finalArguments += $" {arguments}";
+                }
+                finalArguments += "\"";
+                return finalArguments;
             }
             else
             {
-                return $"\"{m_scriptPath}\" {arguments}";
+                var finalArguments = $"\"{m_scriptPath}";
+                if (!string.IsNullOrEmpty(arguments))
+                {
+                    finalArguments += $" {arguments}";
+                }
+                finalArguments += "\"";
+                return finalArguments;
             }
         }
 
@@ -49,7 +91,7 @@ namespace Doodle
             }
 
             string scriptProcessed = null;
-            if (Environment.OSVersion.Platform == PlatformID.Win32NT)
+            if (DoodleEnv.curPlatform == Platform.Windows)
             {
                 scriptProcessed = script + ".bat";
             }

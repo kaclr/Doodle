@@ -41,8 +41,13 @@ namespace Test
         {
             Logger.verbosity = Verbosity.Verbose;
 
-            Script script = new Script("tmp");
-            script.Execute(null);
+            ApkTool.Init(() => "H:\\Sorcery\\Solution\\Sorcery\\ThirdParty\\apktool");
+            ApkTool.UnpackAPK(args[0], args[1]);
+
+            //Logger.VerboseLog("安慰话维护");
+
+            //Script script = new Script("G:\\Doodle\\Solution\\Test\\bin\\Debug\\netcoreapp2.0\\temp\\a b\\tmp.bat");
+            //script.Execute(null);
         }
     }
 }

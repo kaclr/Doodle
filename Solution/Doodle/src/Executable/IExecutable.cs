@@ -6,6 +6,13 @@ namespace Doodle
 {
     interface IExecutable
     {
-        string Execute(string arguments);
+        string ExecuteOut(string arguments);
+        string ExecuteErr(string arguments);
+        void Execute(string arguments);
+        void Execute(string arguments, out string stdout, out string stderr);
+
+        int ExecuteNoThrow(string arguments);
+        int ExecuteNoThrow(string arguments, out string stdout);
+        int ExecuteNoThrow(string arguments, out string stdout, out string stderr);
     }
 }

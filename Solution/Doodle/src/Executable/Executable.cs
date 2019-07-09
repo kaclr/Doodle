@@ -10,25 +10,51 @@ namespace Doodle
     {
         public bool printToVerbose { get; set; } = true;
 
-        private string m_exePath;
+        private readonly string m_exePath;
         protected StringBuilder m_stderr;
         protected StringBuilder m_stdout;
 
         public Executable(string exePath)
         {
-            this.m_exePath = exePath;
+            m_exePath = exePath;
         }
 
-        public string Execute(string arguments)
+        public string ExecuteOut(string arguments)
         {
-            if (ExecuteImpl(m_exePath, arguments, out string stdout, out string stderr) != 0)
-            {
-                throw new DoodleException($"Execute '{m_exePath} {arguments}' failed, detail as follows:\n{stderr}");
-            }
+            Execute(arguments, out string stdout, out _);
             return stdout;
         }
 
-        private int ExecuteImpl(string exePath, string arguments, out string stdout, out string stderr)
+        public string ExecuteErr(string arguments)
+        {
+            Execute(arguments, out _, out string stderr);
+            return stderr;
+        }
+
+        public void Execute(string arguments)
+        {
+            ExecuteOut(arguments);
+        }
+
+        public void Execute(string arguments, out string stdout, out string stderr)
+        {
+            if (ExecuteNoThrow(arguments, out stdout, out stderr) != 0)
+            {
+                throw new DoodleException($"Execute '{m_exePath} {arguments}' failed, detail as follows:\n{stderr}");
+            }
+        }
+
+        public int ExecuteNoThrow(string arguments)
+        {
+            return ExecuteNoThrow(arguments, out _, out _);
+        }
+
+        public int ExecuteNoThrow(string arguments, out string stdout)
+        {
+            return ExecuteNoThrow(arguments, out stdout, out _);
+        }
+
+        public int ExecuteNoThrow(string arguments, out string stdout, out string stderr)
         {
             stdout = null;
             stderr = null;
@@ -36,7 +62,7 @@ namespace Doodle
             Process p = new Process();
             try
             {
-                p.StartInfo.FileName = exePath;
+                p.StartInfo.FileName = m_exePath;
                 p.StartInfo.Arguments = arguments;
                 p.StartInfo.CreateNoWindow = true;
                 p.StartInfo.UseShellExecute = false;
@@ -91,5 +117,6 @@ namespace Doodle
             if (printToVerbose)
                 Logger.VerboseLog(e.Data);
         }
+
     }
 }

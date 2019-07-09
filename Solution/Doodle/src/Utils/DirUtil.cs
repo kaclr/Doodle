@@ -12,6 +12,15 @@ namespace Doodle
             return PathUtil.GetPathState(path) == PathState.Dir;
         }
 
+        public static bool IsEmptyDir(string path)
+        {
+            if (!Directory.Exists(path)) return false;
+
+            if (Directory.GetDirectories(path).Length > 0 || Directory.GetFiles(path).Length > 0) return false;
+
+            return true;
+        }
+
         public static void ClearDir(string dir)
         {
             //删除文件夹

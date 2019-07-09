@@ -15,7 +15,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NssIntegration.Common", "Ns
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NssIntegration", "NssIntegration\NssIntegration.csproj", "{B928F9C7-AD14-4DDA-9E98-F730DCEEEFAE}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Doodle.Utils", "Doodle.Utils\Doodle.Utils.csproj", "{684E9132-D316-4C4E-A8A2-A2B164BFECB4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Doodle.Toolkit", "Doodle.Utils\Doodle.Toolkit.csproj", "{684E9132-D316-4C4E-A8A2-A2B164BFECB4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
