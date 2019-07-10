@@ -28,21 +28,26 @@ namespace Doodle
             s_tempSpaceRoot = path;
         }
 
-        public static string GetTempPath(string path = "")
+        public static string GetPathInTemp(string path = "")
         {
             return Path.Combine(s_tempSpaceRoot, path);
         }
 
-        public static string GetBasePath(string path = "")
+        public static string GetPathInBase(string path = "")
         {
             return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, path);
         }
 
+        public static string NewTempPath()
+        {
+            return Path.Combine(s_tempSpaceRoot, Guid.NewGuid().ToString().Replace("-", ""));
+        }
+
         public static string NewTempDir()
         {
-            var dir = Path.Combine(s_tempSpaceRoot, Guid.NewGuid().ToString().Replace("-", ""));
-            Directory.CreateDirectory(Path.Combine(s_tempSpaceRoot, dir));
-            return dir;
+            var path = NewTempPath();
+            Directory.CreateDirectory(NewTempPath());
+            return path;
         }
     }
 }

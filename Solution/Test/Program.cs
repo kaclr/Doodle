@@ -1,11 +1,39 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using Doodle;
 using Doodle.CommandLineUtils;
+using Newtonsoft.Json;
 using NssIntegration;
 
 namespace Test
 {
+    class TestClass<T1, T2>
+        where T2: class, new()
+    {
+        [JsonProperty]
+        private int A;
+
+        [JsonProperty]
+        public int B { get; set; }
+
+        [JsonProperty]
+        private readonly Dictionary<T1, T2> m_dic;
+
+        public Dictionary<T1, T2> dic { get { return m_dic; }  }
+
+        public TestClass()
+        {
+            m_dic = new Dictionary<T1, T2>();
+        }
+    }
+
+    class TestClass2
+    {
+        [JsonProperty]
+        public string name { get; set; }
+    }
+
     class Program
     {
         private static string Test()
@@ -39,15 +67,10 @@ namespace Test
 
         static void Main(string[] args)
         {
-            Logger.verbosity = Verbosity.Verbose;
+            //Logger.verbosity = Verbosity.Verbose;
 
             ApkTool.Init(() => "H:\\Sorcery\\Solution\\Sorcery\\ThirdParty\\apktool");
-            ApkTool.UnpackAPK(args[0], args[1]);
-
-            //Logger.VerboseLog("安慰话维护");
-
-            //Script script = new Script("G:\\Doodle\\Solution\\Test\\bin\\Debug\\netcoreapp2.0\\temp\\a b\\tmp.bat");
-            //script.Execute(null);
+            ApkTool.PutPathInAPK(args[0], args[1], args[2], args[3]);
         }
     }
 }
