@@ -151,7 +151,8 @@ namespace Doodle.CommandLineUtils
                 else
                 {
                     if (lstArg.Count >= 1)
-                    {// 有值
+                    {// 还有值
+
                         string rawValue = lstArg[0];
                         argument.value = HandleSettedValue(argument, rawValue);
 
@@ -159,7 +160,7 @@ namespace Doodle.CommandLineUtils
                         lstArg.RemoveAt(0);
                     }
                     else
-                    {// 无值
+                    {// 没有值了
 
                         if (argument.defaultValue == null)
                             throw new CommandLineParseException($"{argument.displayName} is required!");
