@@ -191,9 +191,15 @@ namespace Doodle.CommandLineUtils
 
         private object HandleSettedValue(Param param, string rawValue)
         {
-            var converter = TypeRegistration.GetConverter(param.valueType);
-            Debug.Assert(converter != null);
-            var value = converter(param.valueType, rawValue);
+            var typeHandle = CLTypeRegistration.Get(param.valueType);
+            Debug.Assert(typeHandle != null);
+
+            string error = string.Empty;
+            if (!typeHandle.IsValueQualified(param.valueType, rawValue, ref error))
+            {
+                throw new CommandLineParseException($"Parsing {param.displayName} failed, detail as follows:\n{error}");
+            }
+            var value = typeHandle.GetValue(param.valueType, rawValue);
 
             CheckValue(param, value);
             return value;

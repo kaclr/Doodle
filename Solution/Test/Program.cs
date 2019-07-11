@@ -67,8 +67,6 @@ namespace Test
 
         static void Main(string[] args)
         {
-            var v = ClientVersion.New("D:\\Jieji\\NssUnityProj\\Version\\Version_Android.json");
-            Console.WriteLine(v);
         }
     }
 }

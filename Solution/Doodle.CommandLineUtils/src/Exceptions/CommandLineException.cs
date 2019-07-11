@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Doodle.CommandLineUtils
 {
-    public class CommandLineException : Exception
+    public class CommandLineException : DoodleException
     {
         public CommandLineException(string message) : base(message) { }
     }
