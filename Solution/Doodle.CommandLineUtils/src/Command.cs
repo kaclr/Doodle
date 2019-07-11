@@ -1,12 +1,33 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 using Doodle;
 
 namespace Doodle.CommandLineUtils
 {
-    public class Command
+    public class Command : ICLDisplayItem
     {
+        public static string GetHelpText(Command command, string prefix = "")
+        {
+            var sb = new StringBuilder();
+            sb.Append($"{prefix}{GetCLDisplayItemHelpText(command)}{Environment.NewLine}");
+            command.ForEachArguments(argument => sb.Append($"{prefix}{GetCLDisplayItemHelpText(argument)}{Environment.NewLine}"));
+            command.ForEachOptions(option => sb.Append($"{prefix}{GetCLDisplayItemHelpText(option)}{Environment.NewLine}"));
+
+            return sb.ToString();
+        }
+
+        private static string GetCLDisplayItemHelpText(ICLDisplayItem cLDisplayItem)
+        {
+            if (cLDisplayItem.helpText != null)
+                return cLDisplayItem.helpText;
+
+            return $"{cLDisplayItem.name}: {cLDisplayItem.description}";
+        }
+
         public string name { get; set; }
+        public string description { get; set; }
+        public string helpText { get; set; }
 
         private readonly List<Option> m_options = new List<Option>();
         private readonly List<Argument> m_arguments = new List<Argument>();
@@ -18,6 +39,12 @@ namespace Doodle.CommandLineUtils
         public Command(string name)
         {
             this.name = name;
+        }
+
+        public Command(string name, string explain)
+        {
+            this.name = name;
+            this.description = explain;
         }
 
         public int Execute(params string[] args)
@@ -77,6 +104,22 @@ namespace Doodle.CommandLineUtils
         public IEnumerable<Argument> EnumArguments()
         {
             return m_arguments;
+        }
+
+        public void ForEachArguments(Action<Argument> action)
+        {
+            foreach (var argument in m_arguments)
+            {
+                action(argument);
+            }
+        }
+
+        public void ForEachOptions(Action<Option> action)
+        {
+            foreach (var option in m_options)
+            {
+                action(option);
+            }
         }
 
         protected int ExecuteImpl(List<string> lstArg)

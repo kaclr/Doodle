@@ -12,29 +12,13 @@ namespace Doodle.CommandLineUtils
         {
             s_type2TypeHandle = new Dictionary<Type, ICLTypeHandle>
             {
-                // 注册基本类型的converter
+                // 注册基本类型
                 { typeof(string), new CLStringHandle() },
-            //    { typeof(string), (type, str) => str },
-            //    { typeof(int), (type, str) => int.Parse(str) },
-            //    { typeof(double), (type, str) => double.Parse(str) },
-            //    { typeof(float), (type, str) => float.Parse(str) },
-            //    { typeof(bool), (type, str) =>
-            //        {
-            //            if (str == "true")
-            //            {
-            //                return true;
-            //            }
-            //            else if (str == "false")
-            //            {
-            //                return false;
-            //            }
-            //            else
-            //            {
-            //                throw new CommandLineParseException($"Bool value can only be 'true' of 'false', input is '{str}'");
-            //            }
-            //        }
-            //    },
-            //    { typeof(Enum), (type, str) => Enum.Parse(type, str) },
+                { typeof(int), new CLIntHandle() },
+                { typeof(double), new CLDoubleHandle() },
+                { typeof(float), new CLFloatHandle() },
+                { typeof(Enum), new CLEnumHandle() },
+                { typeof(bool), new CLBoolHandle() },
             };
         }
 

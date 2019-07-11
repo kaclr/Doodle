@@ -65,8 +65,21 @@ namespace Test
             return 0;
         }
 
+        private static void test()
+        {
+
+        }
+
         static void Main(string[] args)
         {
+            CLApp.Init("Test");
+
+            var c = CLApp.AddCommand(MethodCommand.New(typeof(Program).GetMethod("test", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static)));
+            c.description = "测试";
+            c.AddOption(new Option("-t", "test", OptionType.SingleValue) { valueType = typeof(BuildTarget) });
+
+            //Console.WriteLine(Command.GetHelpText(c));
+            CLApp.Launch(args);
         }
     }
 }

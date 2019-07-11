@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Doodle.CommandLineUtils
 {
-    public class Argument : Param
+    public sealed class Argument : Param
     {
         public bool mutiValue
         {
@@ -12,10 +12,9 @@ namespace Doodle.CommandLineUtils
             private set;
         }
 
-        public string name
+        public override string name
         {
             get;
-            set;
         }
 
         public Array values
@@ -36,8 +35,6 @@ namespace Doodle.CommandLineUtils
                 m_defaultValue = value;
             }
         }
-
-        public override string displayName => $"argument '{name}'";
 
         private Func<object> m_defaultValue;
 

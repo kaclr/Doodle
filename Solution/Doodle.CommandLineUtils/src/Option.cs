@@ -10,12 +10,11 @@ namespace Doodle.CommandLineUtils
         NoValue,
     }
 
-    public class Option : Param
+    public sealed class Option : Param
     {
         public string template
         {
             get;
-            set;
         }
 
         public OptionType optionType
@@ -36,12 +35,13 @@ namespace Doodle.CommandLineUtils
             internal set;
         }
 
-        public override string displayName => $"option '{template}'";
+        public override string name { get; }
 
         private readonly string[] m_templates;
 
         public Option(string template, string description, OptionType optionType)
         {
+            this.name = template;
             this.template = template;
             this.description = description;
             this.optionType = optionType;

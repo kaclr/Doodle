@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Doodle.CommandLineUtils
 {
-    public abstract class Param
+    public abstract class Param : ICLDisplayItem
     {
         public Type valueType
         {
@@ -19,6 +19,11 @@ namespace Doodle.CommandLineUtils
             }
         }
 
+        public string displayName
+        {
+            get => $"{GetType().Name.ToLower()} '{name}'";
+        }
+
         public Func<object, string> valueChecker
         {
             get;
@@ -31,7 +36,18 @@ namespace Doodle.CommandLineUtils
             set;
         }
 
+        public abstract string name
+        {
+            get;
+        }
+
         public string description
+        {
+            get;
+            set;
+        }
+
+        public string helpText
         {
             get;
             set;
@@ -42,8 +58,6 @@ namespace Doodle.CommandLineUtils
             get;
             internal set;
         }
-
-        public abstract string displayName { get; }
 
         private Type m_valueType;
     }
