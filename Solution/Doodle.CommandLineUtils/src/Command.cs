@@ -84,8 +84,9 @@ namespace Doodle.CommandLineUtils
             // 先处理option
             foreach (var option in m_options)
             {
-                var index = lstArg.FindIndex(arg => option.IsMatchTemplate(arg));
-                option.isSet = index >= 0;
+                // 查找用户是否设置了option
+                var optionIndex = lstArg.FindIndex(arg => option.IsMatchTemplate(arg));
+                option.isSet = optionIndex >= 0;
                 option.value = null;
 
                 if (option.isSet)
@@ -94,27 +95,32 @@ namespace Doodle.CommandLineUtils
                     int consumeCount = 1;
                     if (option.optionType == OptionType.SingleValue)
                     {
-                        if (index + 1 >= lstArg.Count)
-                        {
-                            throw new CommandLineParseException($"Option '{lstArg[index]}' has no value!");
+                        var valueIndex = optionIndex + 1; // 值应该在的index
+                        if (valueIndex >= lstArg.Count)
+                        {// 没有值了
+                            throw new CommandLineParseException($"Option '{lstArg[optionIndex]}' has no value!");
                         }
 
-                        consumeCount = 2;
-                        string rawValue = lstArg[index + 1];
+                        consumeCount = 2; // option + value = 2
+                        string rawValue = lstArg[valueIndex];
+
+                        // 处理原始值，获得最终值
                         option.value = HandleSettedValue(option, rawValue);
                     }
 
                     // 消耗arg
-                    lstArg.RemoveRange(index, consumeCount);
+                    lstArg.RemoveRange(optionIndex, consumeCount);
                 }
                 else
                 {// 没有设置option
+
                     if (option.required)
-                    // 未设置必选option
+                    {// 未设置必选option
                         throw new CommandLineParseException($"Lack of required option '{option.template}'!");
+                    }
 
                     if (option.optionType == OptionType.SingleValue && option.defaultValue != null)
-                    {// 设置默认值
+                    {// 默认值
                         var value = option.defaultValue();
                         CheckValue(option, value);
                         option.value = value;
@@ -128,17 +134,18 @@ namespace Doodle.CommandLineUtils
                 if (argument.mutiValue)
                 {// 变长参数
 
-                    // 创建对应类型的数组，大小要吃光所有参数
+                    // 创建对应类型的数组，大小要吃光所有arg
                     var values = Array.CreateInstance(argument.valueType, lstArg.Count);
                     for (int i = 0; i < lstArg.Count; ++i)
                     {
                         values.SetValue(HandleSettedValue(argument, lstArg[i]), i);
                     }
 
+                    // value和values都是这个数组
                     argument.value = values;
                     argument.values = values;
 
-                    // 消耗arg
+                    // 消耗光arg
                     lstArg.Clear();
                 }
                 else
@@ -188,7 +195,6 @@ namespace Doodle.CommandLineUtils
             var value = converter(param.valueType, rawValue);
 
             CheckValue(param, value);
-
             return value;
         }
 
