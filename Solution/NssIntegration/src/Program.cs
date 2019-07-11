@@ -28,16 +28,25 @@ namespace NssIntegration
                 dicEnvConfig = (Dictionary<string, string>)jsonSerializer.Deserialize(new StreamReader(envConfigPath), typeof(Dictionary<string, string>));
             }
 
-            
-
+            // 初始化各种工具类
             SvnUtil.Init(() => GetEnv(envConfigPath, dicEnvConfig, "SvnBin"));
+            ApkTool.Init(() => GetEnv(envConfigPath, dicEnvConfig, "ApkTool"));
+            IntegrationServer.Init(() => GetEnv(envConfigPath, dicEnvConfig, "IntegrationServerAddress"));
 
-            CLApp.AddCommand(MethodCommand.New(typeof(Program).GetMethod("StatAddAssets", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static)));
+            CLApp.AddCommand(NewMethodCommand(typeof(BuildProcedure), "AssemblyApk"));
+            CLApp.AddCommand(NewMethodCommand(typeof(BuildProcedure), "PrepareVersion"));
+            CLApp.AddCommand(NewMethodCommand(typeof(BuildProcedure), "ModifyMacro"));
 
             Logger.SetLogFile("NssIntegrationStart", null);
-            Logger.EndMuteConsoleOutput();
+            Logger.EndMuteConsoleOutput(); 
 
             CLApp.Launch(args);
+        }
+
+        private static Command NewMethodCommand(Type classType, string methodName)
+        {
+            return MethodCommand.New(classType.GetMethod(methodName,
+                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static));
         }
 
         private static string GetEnv(string envConfigPath, Dictionary<string, string> dicEnvConfig, string key)

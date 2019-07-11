@@ -9,8 +9,8 @@ namespace Doodle
     {
         public Verbosity verbosity { get; set; } = Verbosity.Verbose;
 
-        private readonly StreamWriter m_outFile;
-        private readonly StreamWriter m_errFile;
+        private readonly TextWriter m_outFile;
+        private readonly TextWriter m_errFile;
         private readonly bool m_isOutErrSame;
 
         public LogFile(string file)
@@ -33,6 +33,13 @@ namespace Doodle
         {
             m_outFile = new StreamWriter(outStream) { AutoFlush = true };
             m_errFile = new StreamWriter(errStream) { AutoFlush = true };
+            m_isOutErrSame = false;
+        }
+
+        public LogFile(TextWriter outWriter, TextWriter errWriter)
+        {
+            m_outFile = outWriter;
+            m_errFile = errWriter;
             m_isOutErrSame = false;
         }
 

@@ -12,6 +12,8 @@ namespace Doodle
             set => s_logFiles[0].verbosity = value;
         }
 
+        public static bool forceConsoleOutput { get; set; } = false;
+
         private static readonly Dictionary<string, int> s_dicLogFileIndex = new Dictionary<string, int>();
         private static readonly List<LogFile> s_logFiles = new List<LogFile>();
         private static readonly List<bool> s_logFileOnOff = new List<bool>();
@@ -21,7 +23,7 @@ namespace Doodle
 
         static Logger()
         {
-            s_logFiles.Add(new LogFile(Console.OpenStandardOutput(), Console.OpenStandardError()));
+            s_logFiles.Add(new LogFile(Console.Out, Console.Error));
             s_logFileOnOff.Add(true); // 默认开启
 
             verbosity = Verbosity.Log;
@@ -43,6 +45,14 @@ namespace Doodle
                 s_dicLogFileIndex.Add(name, s_logFiles.Count);
                 s_logFiles.Add(logFile);
                 s_logFileOnOff.Add(true);
+            }
+        }
+
+        public static void TryOffConsoleOutput()
+        {
+            if (!forceConsoleOutput)
+            {
+                ToggleConsoleOutput(false);
             }
         }
 

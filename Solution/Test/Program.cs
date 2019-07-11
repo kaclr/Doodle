@@ -67,10 +67,8 @@ namespace Test
 
         static void Main(string[] args)
         {
-            //Logger.verbosity = Verbosity.Verbose;
-
-            ApkTool.Init(() => "H:\\Sorcery\\Solution\\Sorcery\\ThirdParty\\apktool");
-            ApkTool.PutPathInAPK(args[0], args[1], args[2], args[3]);
+            var v = ClientVersion.New("D:\\Jieji\\NssUnityProj\\Version\\Version_Android.json");
+            Console.WriteLine(v);
         }
     }
 }

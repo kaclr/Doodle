@@ -30,6 +30,8 @@ namespace Doodle.CommandLineUtils
 
             var logFileOpt = s_rootCommand.AddOption(new Option("-l|--logFile", "日志文件", OptionType.SingleValue));
             var verboseOpt = s_rootCommand.AddOption(new Option("-v|--verbose", "输出冗余", OptionType.NoValue));
+            var forceConsoleOutputOpt = s_rootCommand.AddOption(new Option("-f|--forceConsoleOutput", "强制把日志输出到Console", OptionType.NoValue));
+            var persistentSpaceOpt = s_rootCommand.AddOption(new Option("-p|--persistentSpace", "持久化目录", OptionType.SingleValue));
 
             s_rootCommand.OnExecute(() =>
             {
@@ -43,6 +45,18 @@ namespace Doodle.CommandLineUtils
                 Logger.VerboseLog("CLApp initializing...");
                 Logger.VerboseLog($"logFile: {logFileOpt.value}");
                 Logger.VerboseLog($"verbose: {verboseOpt.isSet}");
+                Logger.VerboseLog($"forceConsoleOutput: {forceConsoleOutputOpt.isSet}");
+                Logger.VerboseLog($"persistentSpaceOpt: {persistentSpaceOpt.value}");
+
+                if (forceConsoleOutputOpt.isSet)
+                {
+                    Logger.forceConsoleOutput = true;
+                }
+
+                if (persistentSpaceOpt.isSet && !string.IsNullOrEmpty((string)persistentSpaceOpt.value))
+                {
+                    SpaceUtil.SetPersistentSpace((string)persistentSpaceOpt.value);
+                }
 
                 string logFile = (string)logFileOpt.value;
                 if (!string.IsNullOrEmpty(logFile))
