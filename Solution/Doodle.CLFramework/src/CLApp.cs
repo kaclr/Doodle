@@ -19,6 +19,7 @@ namespace Doodle.CommandLineUtils
         private static readonly Command s_rootCommand = new Command("");
         private static Action s_onRootExecute;
         private static bool s_inited = false;
+        private static bool s_hasRootCommandExecuted = false;
 
         public static void Init(string appName)
         {
@@ -35,6 +36,10 @@ namespace Doodle.CommandLineUtils
 
             s_rootCommand.OnExecute(() =>
             {
+                if (s_hasRootCommandExecuted)
+                    return 0;
+                s_hasRootCommandExecuted = true;
+
                 Logger.BeginMuteConsoleOutput();
 
                 if (verboseOpt.isSet)
@@ -90,6 +95,20 @@ namespace Doodle.CommandLineUtils
                 throw new Exception($"{nameof(CLApp)} hasn't been inited!");
 
             return s_rootCommand.Execute(args);
+        }
+
+        public static int LaunchMutiCommand(string[] args)
+        {
+            if (!s_inited)
+                throw new Exception($"{nameof(CLApp)} hasn't been inited!");
+
+            var ret = s_rootCommand.Execute(args);
+            while (ret == 0 && s_rootCommand.remainArgs.Length > 0 && s_rootCommand.remainArgs.Length != args.Length)
+            {
+                args = s_rootCommand.remainArgs;
+                ret = s_rootCommand.Execute(args);
+            }
+            return ret;
         }
 
         public static Command AddCommand(Command command)

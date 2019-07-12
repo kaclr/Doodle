@@ -36,6 +36,7 @@ namespace NssIntegration
             CLApp.AddCommand(NewMethodCommand(typeof(BuildProcedure), "AssemblyApk"));
             CLApp.AddCommand(NewMethodCommand(typeof(BuildProcedure), "PrepareVersion"));
             CLApp.AddCommand(NewMethodCommand(typeof(BuildProcedure), "ModifyMacro"));
+            CLApp.AddCommand(NewMethodCommand(typeof(BuildProcedure), "BuildApk"));
 
             Logger.SetLogFile("NssIntegrationStart", null);
             Logger.EndMuteConsoleOutput(); 

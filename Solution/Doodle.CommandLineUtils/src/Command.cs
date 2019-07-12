@@ -29,6 +29,12 @@ namespace Doodle.CommandLineUtils
         public string description { get; set; }
         public string helpText { get; set; }
 
+        public string[] remainArgs
+        {
+            get;
+            private set;
+        }
+
         private readonly List<Option> m_options = new List<Option>();
         private readonly List<Argument> m_arguments = new List<Argument>();
         private readonly Dictionary<string, Command> m_subCommands = new Dictionary<string, Command>();
@@ -229,6 +235,7 @@ namespace Doodle.CommandLineUtils
                 // 使用子命令的返回值
                 retValue = subCommand.ExecuteImpl(lstArg);
             }
+            remainArgs = lstArg.ToArray();
             return retValue;
         }
 

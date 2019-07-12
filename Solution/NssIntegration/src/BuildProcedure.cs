@@ -5,10 +5,38 @@ using System.Text;
 namespace NssIntegration
 {
     using Doodle;
+    using Doodle.CommandLineUtils;
     using System.IO;
 
     static class BuildProcedure
     {
+        public static void BuildApk(
+            [ParameterConfiguration("Unity可执行程序的路径")] string unityExePath,
+            [ParameterConfiguration("Nss客户端工程根目录")] string nssUnityProj,
+            [ParameterConfiguration("构建模式")] BuildMode buildMode,
+            [ParameterConfiguration("是否执行工程准备流程", optionTemplate = "-prepareProject")] bool prepareProject,
+            [ParameterConfiguration("Version文件路径", optionTemplate = "-versionJsonPath")] string versionJsonPath = null,
+            [ParameterConfiguration("版本线", optionTemplate = "-verLine")] VerLine verLine = VerLine.DB,
+            [ParameterConfiguration("包类型", optionTemplate = "-packageType")] PackageType packageType = PackageType.Normal,
+            [ParameterConfiguration("构建选项", optionTemplate = "-buildOption")] BuildOption buildOption = BuildOption.None,
+            [ParameterConfiguration("客户端工程内的Tools目录", optionTemplate = "-toolsDir")] string toolsDir = "../Tools",
+            [ParameterConfiguration("输出目录", optionTemplate = "-outputDir")] string outputDir = "Output",
+            [ParameterConfiguration("当前svn revision", optionTemplate = "-svnRev")] string svnRev = null)
+        {
+            ModifyMacro(nssUnityProj, buildMode, packageType, buildOption);
+
+            var unityExe = new Executable(unityExePath);
+            var unityArguments = $"-batchmode -quit -logFile \"G:\\temp\\log.log\" -projectPath \"{nssUnityProj}\" -executeMethod \"NssIntegration.BuildProcedure.Entry\" -l \"G:\\temp\\log2.log\"";
+            if (prepareProject)
+            {
+                unityArguments += $" PrepareProject {buildMode} {BuildTarget.Android} \"{versionJsonPath}\" {packageType} {buildOption} \"{toolsDir}\"";
+            }
+            var sdkRoot = "D:\\android_sdk";
+            var ndkRoot = "D:\\android-ndk-r13b";
+            unityArguments += $" BuildApk {buildMode} \"{sdkRoot}\" \"{ndkRoot}\" {verLine} {packageType} {buildOption} \"{toolsDir}\" \"{outputDir}\" {svnRev}";
+            unityExe.Execute(unityArguments);
+        }
+
         public static void PrepareVersion(BuildTarget buildTarget, string svnUrl)
         {
             Logger.TryOffConsoleOutput();
@@ -33,6 +61,8 @@ namespace NssIntegration
 
         public static void ModifyMacro(string nssUnityProj, BuildMode buildMode, PackageType packageType, BuildOption buildOption)
         {
+            Logger.Log("开始修改客户端宏文件...");
+
             var mcsPath = Path.Combine(nssUnityProj, "Assets/mcs.rsp");
             if (!File.Exists(mcsPath)) throw new ArgumentException($"Can't find mcs.rsp in '{nssUnityProj}'!", nssUnityProj);
 

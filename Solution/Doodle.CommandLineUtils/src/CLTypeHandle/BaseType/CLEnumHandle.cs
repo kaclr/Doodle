@@ -19,8 +19,9 @@ namespace Doodle.CommandLineUtils
         public bool IsValueQualified(Type type, string rawValue, ref string error)
         {
             var limitValues = GetLimitValues(type);
-            if (Array.FindIndex<string>(limitValues, v => v != rawValue) >=0 )
-            {// 有任何不在限制里的值都不行
+
+            if (Array.FindIndex<string>(limitValues, v => v == rawValue) < 0)
+            {// 找不到任何一个匹配的值
                 error = $"'{rawValue}' is not qualifed value in '{ImplementHelper.GetLimitValuesText(limitValues)}'!";
                 return false;
             }
