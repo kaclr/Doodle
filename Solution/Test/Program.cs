@@ -72,14 +72,10 @@ namespace Test
 
         static void Main(string[] args)
         {
-            CLApp.Init("Test");
+            Logger.verbosity = Verbosity.Verbose;
 
-            var c = CLApp.AddCommand(MethodCommand.New(typeof(Program).GetMethod("test", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static)));
-            c.description = "测试";
-            c.AddOption(new Option("-t", "test", OptionType.SingleValue) { valueType = typeof(BuildTarget) });
-
-            //Console.WriteLine(Command.GetHelpText(c));
-            CLApp.Launch(args);
+            IFSUtil.Init(() => "H:\\branches\\H_trunk\\Tools\\BuildTools\\IIPS");
+            IFSUtil.UnpackIFS(args[0], args[1]);
         }
     }
 }

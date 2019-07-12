@@ -17,7 +17,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>E:\E_trunk\NssUnityProj\Assets\Editor\NssIntegration\Library\</OutputPath>
+    <OutputPath>H:\branches\H_trunk\NssUnityProj\Assets\Editor\NssIntegration\Library\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
