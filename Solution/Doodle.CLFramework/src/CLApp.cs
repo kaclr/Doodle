@@ -97,7 +97,7 @@ namespace Doodle.CommandLineUtils
             return s_rootCommand.Execute(args);
         }
 
-        public static int LaunchMutiCommand(string[] args)
+        public static int LaunchMuti(string[] args)
         {
             if (!s_inited)
                 throw new Exception($"{nameof(CLApp)} hasn't been inited!");
