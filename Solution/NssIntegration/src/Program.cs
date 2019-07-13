@@ -32,11 +32,13 @@ namespace NssIntegration
             SvnUtil.Init(() => GetEnv(envConfigPath, dicEnvConfig, "SvnBin"));
             ApkTool.Init(() => GetEnv(envConfigPath, dicEnvConfig, "ApkTool"));
             IntegrationServer.Init(() => GetEnv(envConfigPath, dicEnvConfig, "IntegrationServerAddress"));
+            IFSUtil.Init(() => GetEnv(envConfigPath, dicEnvConfig, "IIPS"));
 
             CLApp.AddCommand(NewMethodCommand(typeof(BuildProcedure), "AssemblyApk"));
             CLApp.AddCommand(NewMethodCommand(typeof(BuildProcedure), "PrepareVersion"));
             CLApp.AddCommand(NewMethodCommand(typeof(BuildProcedure), "ModifyMacro"));
             CLApp.AddCommand(NewMethodCommand(typeof(BuildProcedure), "BuildApk"));
+            CLApp.AddCommand(NewMethodCommand(typeof(BuildProcedure), "ModifyIFSVersion"));
 
             Logger.SetLogFile("NssIntegrationStart", null);
             Logger.EndMuteConsoleOutput(); 

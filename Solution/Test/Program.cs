@@ -8,74 +8,36 @@ using NssIntegration;
 
 namespace Test
 {
-    class TestClass<T1, T2>
-        where T2: class, new()
+    public class TestClass
     {
-        [JsonProperty]
-        private int A;
+        public static implicit operator TestClass(string str) => new TestClass(str);
 
-        [JsonProperty]
-        public int B { get; set; }
+        private string m_str;
 
-        [JsonProperty]
-        private readonly Dictionary<T1, T2> m_dic;
-
-        public Dictionary<T1, T2> dic { get { return m_dic; }  }
-
-        public TestClass()
+        public TestClass(string str)
         {
-            m_dic = new Dictionary<T1, T2>();
+            m_str = str;
         }
     }
 
-    class TestClass2
+    public class DerivedClass : TestClass
     {
-        [JsonProperty]
-        public string name { get; set; }
+        public DerivedClass(string str) : base(str)
+        {
+        }
     }
 
     class Program
     {
-        private static string Test()
-        {
-            return null;
-        }
-
-        private static int BuildApk(
-            [ParameterConfiguration("客户端工程中的Tools目录")] string toolsDir,
-            [ParameterConfiguration("", optionTemplate = "-b")] bool toolsDir2,
-            [ParameterConfiguration("产物输出目录", optionTemplate = "-o")] string outputDir = "1652136")
-        {
-            Logger.Log("BuildApk!");
-            Logger.Log("toolsDir: " + toolsDir);
-            Logger.Log("toolsDir2: " + toolsDir2);
-            Logger.Log("outputDir: " + outputDir);
-
-            return 0;
-        }
-
-        private static int BuildApk2(
-            string toolsDir,
-            string outputDir = null)
-        {
-            Logger.Log("BuildApk!");
-            Logger.Log("toolsDir: " + toolsDir);
-            Logger.Log("outputDir: " + outputDir);
-
-            return 0;
-        }
-
-        private static void test()
-        {
-
-        }
-
+        
         static void Main(string[] args)
         {
             Logger.verbosity = Verbosity.Verbose;
 
-            IFSUtil.Init(() => "H:\\branches\\H_trunk\\Tools\\BuildTools\\IIPS");
-            IFSUtil.UnpackIFS(args[0], args[1]);
+            var type = typeof(NssUnityProj);
+            var obj = Activator.CreateInstance(type);
+            var perp = type.GetProperty("value", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
+            perp.SetValue(obj, "123");
         }
     }
 }

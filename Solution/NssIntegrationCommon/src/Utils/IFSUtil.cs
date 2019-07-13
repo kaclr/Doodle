@@ -59,9 +59,44 @@ namespace NssIntegration
             {
                 PathUtil.RemovePath(outIFSPath);
             }
+            DirUtil.TryCreateParentDir(outIFSPath);
 
             Logger.VerboseLog($"Packing ifs '{outIFSPath}' from directory '{inputDir}'...");
             s_nifs.Execute($"create \"{inputDir}\" \"{outIFSPath}\"");
+        }
+
+        public static string ModifyIFSVersion(string srcIFSPath, BuildTarget buildTarget, string newVersion)
+        {
+            var newIFSPath = Path.Combine(SpaceUtil.NewTempDir(), NssHelper.GetStandardIFSName(buildTarget, newVersion));
+            ModifyIFSVersion(srcIFSPath, newIFSPath, newVersion);
+            return newIFSPath;
+        }
+
+        public static void ModifyIFSVersion(string srcIFSPath, string outIFSPath, string newVersion)
+        {
+            InitInner();
+
+            if (!File.Exists(srcIFSPath)) throw new ArgumentException($"Can't find '{nameof(srcIFSPath)}' in path '{srcIFSPath}'!", nameof(srcIFSPath));
+            if (!ClientVersion.IsVersionValid(newVersion)) throw new ArgumentException($"'{newVersion}' is not a valid version!", nameof(newVersion));
+
+            var ifsDir = SpaceUtil.NewTempPath();
+            UnpackIFS(srcIFSPath, ifsDir);
+
+            // 修改所有平台的版本号
+            foreach (var buildTarget in Enum.GetValues(typeof(BuildTarget)))
+            {
+                var versionJsonPath = Path.Combine(ifsDir, "AssetBundles", ClientVersion.GetVersionFileName((BuildTarget)buildTarget));
+                if (File.Exists(versionJsonPath))
+                {
+                    ClientVersion.ModifyVersion(versionJsonPath, newVersion);
+                }
+            }
+
+            if (PathUtil.Exists(outIFSPath))
+            {
+                PathUtil.RemovePath(outIFSPath);
+            }
+            PackIFS(ifsDir, outIFSPath);
         }
 
         private static void InitInner()

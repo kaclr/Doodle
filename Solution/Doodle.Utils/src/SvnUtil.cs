@@ -109,6 +109,12 @@ namespace Doodle
             s_svn.ExecuteOut(arguments);
         }
 
+        public static void Commit(string localPath)
+        {
+            InitInner();
+            s_svn.ExecuteOut($"ci \"{localPath}\"");
+        }
+
         public static SvnInfo GetSvnInfo(string pathOrUrl)
         {
             InitInner();
@@ -136,7 +142,7 @@ namespace Doodle
             return GetSvnVersionInner();
         }
 
-        public static string GetSvnVersionInner()
+        private static string GetSvnVersionInner()
         {
             var str = s_svn.ExecuteOut($"--version --quiet");
             var m = Regex.Match(str, "(\\d+\\.\\d+\\.\\d+)");
