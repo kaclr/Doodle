@@ -17,7 +17,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>H:\branches\H_trunk\NssUnityProj\Assets\Editor\NssIntegration\Library\</OutputPath>
+    <OutputPath>..\..\..\nssclient\NssUnityProj\Assets\Editor\NssIntegration\Library\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -48,6 +48,14 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Doodle.CLFramework\Doodle.CLFramework.csproj">
+      <Project>{ce96e614-ec06-414f-8812-652b347c9794}</Project>
+      <Name>Doodle.CLFramework</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Doodle.CommandLineUtils\Doodle.CommandLineUtils.csproj">
+      <Project>{40c52850-20a9-4dce-93e0-d93431ec9770}</Project>
+      <Name>Doodle.CommandLineUtils</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Doodle\Doodle.csproj">
       <Project>{83f18b3c-920f-40c2-8c16-954effcb0d91}</Project>
       <Name>Doodle</Name>

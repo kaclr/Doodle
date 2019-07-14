@@ -35,10 +35,10 @@ namespace NssIntegration
             IFSUtil.Init(() => GetEnv(envConfigPath, dicEnvConfig, "IIPS"));
 
             CLApp.AddCommand(NewMethodCommand(typeof(BuildProcedure), "AssemblyApk"));
-            CLApp.AddCommand(NewMethodCommand(typeof(BuildProcedure), "PrepareVersion"));
+            CLApp.AddCommand(NewMethodCommand(typeof(BuildProcedure), "PrepareUniqueVersionJson"));
             CLApp.AddCommand(NewMethodCommand(typeof(BuildProcedure), "ModifyMacro"));
             CLApp.AddCommand(NewMethodCommand(typeof(BuildProcedure), "BuildApk"));
-            CLApp.AddCommand(NewMethodCommand(typeof(BuildProcedure), "ModifyIFSVersion"));
+            CLApp.AddCommand(NewMethodCommand(typeof(BuildEntry), "Build"));
 
             Logger.SetLogFile("NssIntegrationStart", null);
             Logger.EndMuteConsoleOutput(); 
@@ -48,8 +48,15 @@ namespace NssIntegration
 
         private static Command NewMethodCommand(Type classType, string methodName)
         {
-            return MethodCommand.New(classType.GetMethod(methodName,
-                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static));
+            try
+            {
+                return MethodCommand.New(classType.GetMethod(methodName,
+                    System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static));
+            }
+            catch (Exception e)
+            {
+                throw new NssIntegrationException($"初始化'{classType.Name}'中的函数'{methodName}'时失败", e);
+            }
         }
 
         private static string GetEnv(string envConfigPath, Dictionary<string, string> dicEnvConfig, string key)

@@ -9,6 +9,8 @@ namespace Doodle.CommandLineUtils
     {
         public static Command New(MethodInfo method, Func<object> getInstance = null)
         {
+            if (method == null) throw new ArgumentNullException(nameof(method));
+
             var methodParameters = method.GetParameters();
             var command = new Command(method.Name);
             var commandParams = new Param[methodParameters.Length];
@@ -26,7 +28,8 @@ namespace Doodle.CommandLineUtils
 
                     var option = new Option(parameterConfiguration.optionTemplate, parameterConfiguration.description, OptionType.SingleValue)
                     {
-                        required = parameterConfiguration.required
+                        required = parameterConfiguration.required,
+                        valueChecker = parameterConfiguration.valueChecker,
                     };
 
                     if (parameterInfo.ParameterType == typeof(bool))
@@ -69,6 +72,7 @@ namespace Doodle.CommandLineUtils
                     if (parameterConfiguration != null)
                     {
                         commandParam.description = parameterConfiguration.description;
+                        commandParam.valueChecker = parameterConfiguration.valueChecker;
                     }
  
                     if (commandParam.defaultValue == null && parameterInfo.DefaultValue != DBNull.Value)

@@ -25,6 +25,12 @@ namespace Doodle.CommandLineUtils
             set;
         }
 
+        public Func<object, string> valueChecker
+        {
+            get;
+            set;
+        }
+
         public ParameterConfigurationAttribute(string description)
         {
             this.description = description;

@@ -17,28 +17,15 @@ namespace NssIntegration
 
     static class BuildProcedure
     {
-        public static void Build(
-            [ParameterConfiguration("Nss客户端工程根目录")] string nssUnityProj,
-            [ParameterConfiguration("平台")] BuildTarget buildTarget,
-            [ParameterConfiguration("版本号", optionTemplate = "-version")] string version,
-            [ParameterConfiguration("输入的IFS文件路径", optionTemplate = "-ifs")] string ifsPath,
-            [ParameterConfiguration("构建配置文件路径", optionTemplate = "-buildConfig")] string buildConfig = "Config/BuildConfig.json",
-            [ParameterConfiguration("构建模式", optionTemplate = "-buildMode")] BuildMode buildMode = BuildMode.Debug,
-            [ParameterConfiguration("版本线", optionTemplate = "-verLine")] VerLine verLine = VerLine.DB,
-            [ParameterConfiguration("包类型", optionTemplate = "-packageType")] PackageType packageType = PackageType.Normal,
-            [ParameterConfiguration("构建选项", optionTemplate = "-buildOption")] BuildOption buildOption = BuildOption.None,
-            [ParameterConfiguration("输出目录", optionTemplate = "-outputDir")] string outputDir = "Output",
-            [ParameterConfiguration("当前svn revision", optionTemplate = "-svnRev")] string svnRev = null
-            )
-        {
 
-        }
 
         public static BuildAppResult BuildApk(
             string unityExePath,
             string nssUnityProj,
             BuildMode buildMode,
             bool prepareProject,
+            string sdkRoot,
+            string ndkRoot,
             string versionJsonPath = null,
             VerLine verLine = VerLine.DB,
             PackageType packageType = PackageType.Normal,
@@ -50,16 +37,14 @@ namespace NssIntegration
             ModifyMacro(nssUnityProj, buildMode, packageType, buildOption);
 
             var result = new BuildAppResult();
-            result.defaultTDir = ModifyDefaultLaunch(verLine, buildMode);
+            result.defaultTDir = ModifyDefaultLaunch(nssUnityProj, verLine, buildMode);
 
             var unityExe = new Executable(unityExePath);
-            var unityArguments = $"-batchmode -quit -logFile \"G:\\temp\\log.log\" -projectPath \"{nssUnityProj}\" -executeMethod \"NssIntegration.BuildProcedure.Entry\" -l \"G:\\temp\\log2.log\"";
+            var unityArguments = $"-batchmode -quit -logFile \"{SpaceUtil.GetPathInTemp("log.log", true)}\" -projectPath \"{nssUnityProj}\" -executeMethod \"NssIntegration.BuildProcedure.Entry\" -l \"{SpaceUtil.GetPathInTemp("log2.log", true)}\"";
             if (prepareProject)
             {
                 unityArguments += $" PrepareProject {buildMode} {BuildTarget.Android} \"{versionJsonPath}\" {packageType} {buildOption} \"{toolsDir}\"";
             }
-            var sdkRoot = "D:\\android_sdk";
-            var ndkRoot = "D:\\android-ndk-r13b";
             unityArguments += $" BuildApk {buildMode} \"{sdkRoot}\" \"{ndkRoot}\" {verLine} {packageType} {buildOption} \"{toolsDir}\" \"{outputDir}\" {svnRev}";
             unityExe.Execute(unityArguments);
 
@@ -138,9 +123,9 @@ namespace NssIntegration
             Logger.Log($"APK组装完成");
         }
 
-        public static string ModifyDefaultLaunch(VerLine verLine, BuildMode buildMode)
+        public static string ModifyDefaultLaunch(string nssUnityProj, VerLine verLine, BuildMode buildMode)
         {
-            var path = "Assets/StreamingAssets/DefaultLaunchConfig.txt";
+            var path = $"{nssUnityProj}/Assets/StreamingAssets/DefaultLaunchConfig.txt";
             var defaultLaunchConfig = new DefaultLaunchConfig(path);
 
             defaultLaunchConfig["DefaultVerLine"] = verLine.ToString();

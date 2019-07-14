@@ -10,7 +10,8 @@
     <ProjectReference Include="..\Doodle.CommandLineUtils\Doodle.CommandLineUtils.csproj" />
     <ProjectReference Include="..\Doodle.Utils\Doodle.Toolkit.csproj" />
     <ProjectReference Include="..\Doodle\Doodle.csproj" />
-    <ProjectReference Include="..\NssIntegrationCommon\NssIntegration.Common.csproj" />
+    <ProjectReference Include="..\NssIntegration.Common\NssIntegration.Common.csproj" />
+    <ProjectReference Include="..\NssIntegration\NssIntegration.csproj" />
   </ItemGroup>
 
 </Project>

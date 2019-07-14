@@ -34,10 +34,16 @@ namespace Test
         {
             Logger.verbosity = Verbosity.Verbose;
 
-            var type = typeof(NssUnityProj);
-            var obj = Activator.CreateInstance(type);
-            var perp = type.GetProperty("value", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
-            perp.SetValue(obj, "123");
+            CLApp.Init("Test");
+            CLApp.AddCommand(MethodCommand.New(typeof(Program).GetMethod("Test", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic)));
+
+            CLApp.Launch(args);
+        }
+
+        static void Test(
+            [NssConceptConfiguration(NssConcept.NssUnityProj)] string nssUnityProj)
+        {
+
         }
     }
 }

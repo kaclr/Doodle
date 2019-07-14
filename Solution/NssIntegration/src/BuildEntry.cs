@@ -10,16 +10,16 @@ namespace NssIntegration
     internal static class BuildEntry
     {
         private static void Build(
-            [ParameterConfiguration("Nss客户端工程根目录")] string nssUnityProj,
-            [ParameterConfiguration("平台")] BuildTarget buildTarget,
+            [NssConceptConfiguration(NssConcept.NssUnityProj)] string nssUnityProj,
+            [NssConceptConfiguration(NssConcept.BuildTarget)] BuildTarget buildTarget,
             [ParameterConfiguration("是否使用唯一的构建版本号", optionTemplate = "-uniqueVersion")] bool uniqueVersion,
-            [ParameterConfiguration("客户端Tools目录路径", optionTemplate = "-toolsDir")] string toolsDir = null,
-            [ParameterConfiguration("构建配置文件路径", optionTemplate = "-buildConfig")] string buildConfigPath = "Config/BuildConfig.json",
-            [ParameterConfiguration("输入的IFS文件路径", optionTemplate = "-ifs")] string ifsPath = null,
-            [ParameterConfiguration("构建模式", optionTemplate = "-buildMode")] BuildMode buildMode = BuildMode.Debug,
-            [ParameterConfiguration("版本线", optionTemplate = "-verLine")] VerLine verLine = VerLine.DB,
-            [ParameterConfiguration("包类型", optionTemplate = "-packageType")] PackageType packageType = PackageType.Normal,
-            [ParameterConfiguration("构建选项", optionTemplate = "-buildOption")] BuildOption buildOption = BuildOption.None,
+            [NssConceptConfiguration(NssConcept.ToolsDir, optionTemplate = "-toolsDir")] string toolsDir = null,
+            [NssConceptConfiguration(NssConcept.BuildConfig, optionTemplate = "-buildConfig")] string buildConfigPath = "Config/BuildConfig.json",
+            [NssConceptConfiguration(NssConcept.IFS, optionTemplate = "-ifs")] string ifsPath = null,
+            [NssConceptConfiguration(NssConcept.BuildMode, optionTemplate = "-buildMode")] BuildMode buildMode = BuildMode.Debug,
+            [NssConceptConfiguration(NssConcept.VerLine, optionTemplate = "-verLine")] VerLine verLine = VerLine.DB,
+            [NssConceptConfiguration(NssConcept.PackageType, optionTemplate = "-packageType")] PackageType packageType = PackageType.Normal,
+            [NssConceptConfiguration(NssConcept.BuildOption, optionTemplate = "-buildOption")] BuildOption buildOption = BuildOption.None,
             [ParameterConfiguration("输出目录", optionTemplate = "-outputDir")] string outputDir = "Output"
             )
         {
@@ -29,8 +29,13 @@ namespace NssIntegration
             }
 
             var buildConfig = new BuildConfig(buildConfigPath);
-            var unityExePath = buildConfig.Get<string>("UnityExe");
-            var svnRev = SvnUtil.GetSvnInfo(nssUnityProj).lastChangedRev;
+            var unityExePath = NssConceptHelper.CheckConceptThrow<string>(NssConcept.UnityExe, buildConfig.Get<string>("UnityExe"));
+            var svnRev = -1;
+            try
+            {
+                svnRev = SvnUtil.GetSvnInfo(nssUnityProj).lastChangedRev;
+            }
+            catch { }
 
             string versionJsonPath = null;
             if (uniqueVersion)
@@ -45,7 +50,10 @@ namespace NssIntegration
             BuildAppResult buildAppResult = null;
             if (buildTarget == BuildTarget.Android)
             {
-                buildAppResult = BuildProcedure.BuildApk(unityExePath, nssUnityProj, buildMode, true,
+                var sdkRoot = buildConfig.Get<string>("AndroidSDKRoot");
+                var ndkRoot = buildConfig.Get<string>("AndroidNDKRoot");
+
+                buildAppResult = BuildProcedure.BuildApk(unityExePath, nssUnityProj, buildMode, true, sdkRoot, ndkRoot,
                     versionJsonPath, verLine, packageType, buildOption, toolsDir, outputDir, svnRev);
             }
             else

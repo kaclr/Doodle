@@ -85,7 +85,7 @@ namespace NssIntegration
             // 修改所有平台的版本号
             foreach (var buildTarget in Enum.GetValues(typeof(BuildTarget)))
             {
-                var versionJsonPath = Path.Combine(ifsDir, "AssetBundles", ClientVersion.GetVersionFileName((BuildTarget)buildTarget));
+                var versionJsonPath = Path.Combine(ifsDir, $"AssetBundles/{ClientVersion.GetVersionFileName((BuildTarget)buildTarget)}");
                 if (File.Exists(versionJsonPath))
                 {
                     ClientVersion.ModifyVersion(versionJsonPath, newVersion);
