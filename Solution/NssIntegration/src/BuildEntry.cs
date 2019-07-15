@@ -28,6 +28,9 @@ namespace NssIntegration
                 toolsDir = Path.Combine(nssUnityProj, "../Tools");
             }
 
+            outputDir = Path.GetFullPath(outputDir);
+            DirUtil.CreateEmptyDir(outputDir);
+
             var buildConfig = new BuildConfig(buildConfigPath);
             var unityExePath = NssConceptHelper.CheckConceptThrow<string>(NssConcept.UnityExe, buildConfig.Get<string>("UnityExe"));
             var svnRev = -1;
@@ -52,9 +55,17 @@ namespace NssIntegration
             {
                 var sdkRoot = buildConfig.Get<string>("AndroidSDKRoot");
                 var ndkRoot = buildConfig.Get<string>("AndroidNDKRoot");
+                var jdkRoot = buildConfig.Get<string>("JDKRoot");
 
-                buildAppResult = BuildProcedure.BuildApk(unityExePath, nssUnityProj, buildMode, true, sdkRoot, ndkRoot,
+                buildAppResult = BuildProcedure.BuildApk(unityExePath, nssUnityProj, buildMode, true, sdkRoot, ndkRoot, jdkRoot,
                     versionJsonPath, verLine, packageType, buildOption, toolsDir, outputDir, svnRev);
+
+                //buildAppResult = new BuildAppResult()
+                //{
+                //    appPath = "H:\\branches\\H_trunk\\NssUnityProj\\Output\\NSS_Debug_Test_DB_1.14.0.22330_349712.apk",
+                //    appVersion = "1.14.0.22330",
+                //    defaultTDir = "Test",
+                //};
             }
             else
             {
@@ -73,7 +84,7 @@ namespace NssIntegration
             }
 
             BuildProcedure.AssemblyApk(buildAppResult.appPath, 
-                NssHelper.GetStandardAppName(buildTarget, buildMode, verLine, buildAppResult.defaultTDir, buildAppResult.appVersion, svnRev), 
+                Path.Combine(outputDir, NssHelper.GetStandardAppName(buildTarget, buildMode, verLine, buildAppResult.defaultTDir, buildAppResult.appVersion, svnRev)), 
                 ifsPath);
         }
     }

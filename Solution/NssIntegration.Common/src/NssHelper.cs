@@ -20,7 +20,7 @@ namespace NssIntegration
             string version,
             int svnRev)
         {
-            var name = $"NSS_{buildMode}_{verLine}_{version}_{svnRev}";
+            var name = $"NSS_{buildMode}_{defaultTDir}_{verLine}_{version}_{svnRev}";
             if (buildTarget == BuildTarget.Android)
             {
                 return $"{name}.apk";

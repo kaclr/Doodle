@@ -26,6 +26,7 @@ namespace NssIntegration
             bool prepareProject,
             string sdkRoot,
             string ndkRoot,
+            string jdkRoot,
             string versionJsonPath = null,
             VerLine verLine = VerLine.DB,
             PackageType packageType = PackageType.Normal,
@@ -45,7 +46,7 @@ namespace NssIntegration
             {
                 unityArguments += $" PrepareProject {buildMode} {BuildTarget.Android} \"{versionJsonPath}\" {packageType} {buildOption} \"{toolsDir}\"";
             }
-            unityArguments += $" BuildApk {buildMode} \"{sdkRoot}\" \"{ndkRoot}\" {verLine} {packageType} {buildOption} \"{toolsDir}\" \"{outputDir}\" {svnRev}";
+            unityArguments += $" BuildApk {buildMode} \"{sdkRoot}\" \"{ndkRoot}\" \"{jdkRoot}\" {verLine} {packageType} {buildOption} \"{toolsDir}\" \"{outputDir}\" {svnRev}";
             unityExe.Execute(unityArguments);
 
             var apks = Directory.GetFiles(outputDir, "*.apk");
