@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Doodle
 {
-    interface IExecutable
+    public interface IExecutable
     {
         string ExecuteOut(string arguments);
         string ExecuteErr(string arguments);
