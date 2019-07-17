@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using Doodle;
 using Doodle.CommandLineUtils;
@@ -8,25 +9,6 @@ using NssIntegration;
 
 namespace Test
 {
-    public class TestClass
-    {
-        public static implicit operator TestClass(string str) => new TestClass(str);
-
-        private string m_str;
-
-        public TestClass(string str)
-        {
-            m_str = str;
-        }
-    }
-
-    public class DerivedClass : TestClass
-    {
-        public DerivedClass(string str) : base(str)
-        {
-        }
-    }
-
     class Program
     {
         
@@ -34,16 +16,16 @@ namespace Test
         {
             Logger.verbosity = Verbosity.Verbose;
 
-            CLApp.Init("Test");
-            CLApp.AddCommand(MethodCommand.New(typeof(Program).GetMethod("Test", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic)));
+            Console.WriteLine($"Parent process {Process.GetCurrentProcess().Id}");
 
-            CLApp.Launch(args);
-        }
+            var childProcess = new Process();
+            childProcess.StartInfo.FileName = "dotnet";
+            childProcess.StartInfo.Arguments = "C:\\Work\\Doodle\\Solution\\Test2\\bin\\Debug\\netcoreapp2.0\\Test2.dll";
+            childProcess.StartInfo.CreateNoWindow = true;
 
-        static void Test(
-            [NssConceptConfiguration(NssConcept.NssUnityProj)] string nssUnityProj)
-        {
-
+            Console.WriteLine($"start child process");
+            childProcess.Start();
+            childProcess.WaitForExit();
         }
     }
 }
