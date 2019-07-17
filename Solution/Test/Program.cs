@@ -16,16 +16,30 @@ namespace Test
         {
             Logger.verbosity = Verbosity.Verbose;
 
-            Console.WriteLine($"Parent process {Process.GetCurrentProcess().Id}");
+            FLockUtil.Init(() => "/Users/harveyjin/Work/nssclient/Tools/BuildTools/ThirdParty/flock");
 
-            var childProcess = new Process();
-            childProcess.StartInfo.FileName = "dotnet";
-            childProcess.StartInfo.Arguments = "C:\\Work\\Doodle\\Solution\\Test2\\bin\\Debug\\netcoreapp2.0\\Test2.dll";
-            childProcess.StartInfo.CreateNoWindow = true;
+            Console.WriteLine($"main process {Process.GetCurrentProcess().Id}");
 
-            Console.WriteLine($"start child process");
-            childProcess.Start();
-            childProcess.WaitForExit();
+            // 使用flock给文件加锁
+            var flock = FLockUtil.NewFLock("lock");
+            bool success = false;
+            if (args[0] == "s")
+            {
+                Console.WriteLine($"flock share");
+                flock.AcquireShareLock();
+            }
+            else
+            {
+                Console.WriteLine($"flock exclusive");
+                flock.AcquireExclusiveLock();
+            }
+
+            Console.WriteLine(success ? "success" : "failed");
+
+            while (true)
+            {
+                System.Threading.Thread.Sleep(1000);
+            }
         }
     }
 }

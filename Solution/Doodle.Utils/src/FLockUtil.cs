@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Text.RegularExpressions;
+using System.Threading;
 
 namespace Doodle
 {
@@ -37,7 +39,9 @@ namespace Doodle
 
     public interface IFLock
     {
+        bool TryAcquireExclusiveLock();
         void AcquireExclusiveLock();
+        bool TryAcquireShareLock();
         void AcquireShareLock();
         void ReleaseLock();
     }
@@ -54,15 +58,35 @@ namespace Doodle
             m_filePath = filePath;
         }
 
+        public bool TryAcquireExclusiveLock()
+        {
+            if (!InitFileStream(false))
+            {
+                return false;
+            }
+
+            return m_flock.ExecuteNoThrow($"-n {m_fileStream.SafeFileHandle.DangerousGetHandle().ToInt32()}") == 0;
+        }
+
         public void AcquireExclusiveLock()
         {
-            InitFileStream();
+            InitFileStream(true);
             m_flock.Execute($"{m_fileStream.SafeFileHandle.DangerousGetHandle().ToInt32()}");
+        }
+
+        public bool TryAcquireShareLock()
+        {
+            if (!InitFileStream(false))
+            {
+                return false;
+            }
+
+            return m_flock.ExecuteNoThrow($"-sn {m_fileStream.SafeFileHandle.DangerousGetHandle().ToInt32()}") == 0;
         }
 
         public void AcquireShareLock()
         {
-            InitFileStream();
+            InitFileStream(true);
             m_flock.Execute($"-s {m_fileStream.SafeFileHandle.DangerousGetHandle().ToInt32()}");
         }
 
@@ -77,10 +101,41 @@ namespace Doodle
             m_fileStream = null;
         }
 
-        private void InitFileStream()
+        private bool InitFileStream(bool block)
         {
-            if (m_fileStream == null)
-                m_fileStream = new FileStream(m_filePath, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Inheritable);
+            if (m_fileStream != null)
+            {
+                return true;
+            }
+
+            while (true)
+            {
+                try
+                {
+                    m_fileStream = new FileStream(m_filePath, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Inheritable | FileShare.ReadWrite);
+                }
+                catch (IOException e)
+                {
+                    if (Regex.IsMatch(e.Message, "^The process cannot access the file '.*' because it is being used by another process\\."))
+                    {
+                        if (block)
+                        {
+                            Thread.Sleep(500);
+                            continue;
+                        }
+                        else
+                        {
+                            return false;
+                        }
+                    }
+
+                    throw e;
+                }
+
+                break;
+            }
+
+            return true;
         }
     }
 }
