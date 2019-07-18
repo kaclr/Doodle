@@ -105,7 +105,7 @@ namespace Doodle
                 return scriptProcessed;
             }
 
-            throw new DoodleException($"Can not find script '{script}' or '{scriptProcessed}'!");
+            throw new ExecutableException($"Can not find script '{script}' or '{scriptProcessed}'!");
         }
 
     }

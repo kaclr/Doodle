@@ -6,7 +6,9 @@ namespace NssIntegration
 {
     using Doodle;
     using Doodle.CommandLineUtils;
+    using System.Diagnostics;
     using System.IO;
+    using System.Threading;
 
     public class BuildAppResult
     {
@@ -187,6 +189,62 @@ namespace NssIntegration
 
             defaultLaunchConfig.Serialize(path);
             return defaultLaunchConfig["DefaultTDir"];
+        }
+
+        public static void AcquireUnity(string unityPoolDir, string unitySvnUrl, string unitySvnRev, out string unityExePath, out IFLock unityLock)
+        {
+            if (DoodleEnv.curPlatform != Platform.OSX) throw new NssIntegrationException($"'{nameof(AcquireUnity)}'只能在OS X系统使用！");
+            if (!Directory.Exists(unityPoolDir)) throw new NotDirException(unityPoolDir, nameof(unityPoolDir));
+
+            unityExePath = null;
+            unityLock = null;
+
+            // 遍历目录下所有Unity，返回可以得到写锁的那个
+            string unityAppPath = null;
+            var rootDir = new DirectoryInfo(unityPoolDir);
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
+            IFLock flock = null;
+            RepeateDo repeateDo = new RepeateDo(600);
+            repeateDo.Do(() =>
+            {
+                foreach (var dir in rootDir.GetDirectories("*.app"))
+                {
+                    flock = FLockUtil.NewFLock(Path.Combine(unityPoolDir, dir.Name, "lock"));
+                    if (!flock.TryAcquireExclusiveLock())
+                    {
+                        continue;
+                    }
+
+                    unityAppPath = Path.Combine(unityPoolDir, dir.Name, "Contents/MacOS/Unity");
+                    break;
+                }
+
+                if (unityAppPath == null)
+                {
+                    Logger.Log($"没有可用的Unity引擎，已等待{stopwatch.ElapsedMilliseconds / 1000 / 60}分钟...");
+                    Thread.Sleep(60 * 1000);
+                    return false;
+                }
+                
+                return true;
+            });
+
+            repeateDo = new RepeateDo(5);
+            repeateDo.IgnoreException<ExecutableException>();
+            repeateDo.Do(() => SvnUtil.Sync(unityAppPath, unitySvnUrl, unitySvnRev));
+
+            if (!flock.TryAcquireShareLock())
+            {
+                throw new ImpossibleException($"之前已经获取了写锁了，获取读锁不可能失败！");
+            }
+
+            // 赋执行权限
+            CmdUtil.Execute($"chmod -R +x {unityAppPath}");
+
+            unityExePath = Path.Combine(unityAppPath, "Contents/MacOS/Unity");
+            unityLock = flock;
+            return;
         }
     }
 }

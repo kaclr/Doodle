@@ -40,7 +40,7 @@ namespace Doodle
         {
             if (ExecuteNoThrow(arguments, out stdout, out stderr) != 0)
             {
-                throw new DoodleException($"Execute '{m_exePath} {arguments}' failed, detail as follows:\n{stderr}");
+                throw new ExecutableException($"Execute '{m_exePath} {arguments}' failed, detail as follows:\n{stderr}");
             }
         }
 

@@ -36,7 +36,7 @@ namespace Doodle
             }
         }
 
-        public static void Sync(string localPath, string svnUrl = null, bool removeIgnore = true)
+        public static void Sync(string localPath, string svnUrl = null, string svnRev = "head", bool removeIgnore = true)
         {
             InitInner();
 
@@ -46,7 +46,7 @@ namespace Doodle
             {// 直接checkout就完事了
                 if (string.IsNullOrEmpty(svnUrl)) throw new ArgumentException($"'{nameof(svnUrl)}' is empty when svn checkout!", nameof(svnUrl));
 
-                Checkout(svnUrl, localPath);
+                Checkout(svnUrl, localPath, svnRev);
                 return;
             }
 
@@ -74,7 +74,7 @@ namespace Doodle
             DoWithCleanup(arguments, localPath);
 
             // 3. switch
-            arguments = $"switch --force \"{svnUrl}\" \"{localPath}\"";
+            arguments = $"switch --force -r \"{svnRev}\" \"{svnUrl}\" \"{localPath}\"";
             Logger.VerboseLog($"3. svn {arguments}");
             DoWithCleanup(arguments, localPath);
 
@@ -97,14 +97,14 @@ namespace Doodle
             }
         }
 
-        public static void Checkout(string svnUrl, string localPath)
+        public static void Checkout(string svnUrl, string localPath, string svnRev = "head")
         {
             InitInner();
 
             if (PathUtil.Exists(localPath)) throw new ArgumentException($"'{localPath}' is already exists!", nameof(localPath));
             if (!IsSvnUrl(svnUrl)) throw new ArgumentException($"'{nameof(svnUrl)}' is not a svn url!", nameof(svnUrl));
 
-            var arguments = $"co \"{svnUrl}\" \"{localPath}\"";
+            var arguments = $"co -r \"{svnRev}\" \"{svnUrl}\" \"{localPath}\"";
             Logger.VerboseLog($"svn {arguments}");
             s_svn.ExecuteOut(arguments);
         }

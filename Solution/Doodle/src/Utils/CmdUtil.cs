@@ -1,43 +1,53 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 namespace Doodle
 {
     public static class CmdUtil
     {
-        private static readonly ICmdExecuter m_cmdExecuter;
-
-        static CmdUtil()
+        public static string ExecuteOut(string cmd)
         {
-            if (DoodleEnv.curPlatform == Platform.OSX)
-            {
-                m_cmdExecuter = new ShellExecuter();
-            }
-            else
-            {
-                m_cmdExecuter = new DosExecuter();
-            }
+            return GenScript(cmd).ExecuteOut(null);
         }
 
-        public static string ExecuteCmd(string cmd)
+        public static string ExecuteErr(string cmd)
         {
-            return m_cmdExecuter.ExecuteCmd(cmd);
+            return GenScript(cmd).ExecuteErr(null);
         }
 
-        public static int ExecuteCmd(string cmd, out string stderr)
+        public static void Execute(string cmd)
         {
-            return m_cmdExecuter.ExecuteCmd(cmd, out stderr);
+            GenScript(cmd).Execute(null);
         }
 
-        public static int ExecuteCmdOE(string cmd, out string stdout, out string stderr)
+        public static void Execute(string cmd, out string stdout, out string stderr)
         {
-            return m_cmdExecuter.ExecuteCmdOE(cmd, out stdout, out stderr);
+            GenScript(cmd).Execute(null, out stdout, out stderr);
         }
 
-        public static bool ExistsExec(string execPath)
+        public static int ExecuteNoThrow(string cmd)
         {
-            return m_cmdExecuter.ExistsExec(execPath);
+            return GenScript(cmd).ExecuteNoThrow(null);
+        }
+
+        public static int ExecuteNoThrow(string cmd, out string stdout)
+        {
+            return GenScript(cmd).ExecuteNoThrow(null, out stdout);
+        }
+
+        public static int ExecuteNoThrow(string cmd, out string stdout, out string stderr)
+        {
+            return GenScript(cmd).ExecuteNoThrow(null, out stdout, out stderr);
+        }
+
+        private static Script GenScript(string cmd)
+        {
+            var f = SpaceUtil.NewTempPath();
+            File.WriteAllText(f, cmd);
+
+           return new Script(f);
         }
     }
 }
