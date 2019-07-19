@@ -3,4 +3,5 @@
 bin
 obj
 launchSettings.json
-Net35Solution/*/src
+/Net35Solution/*/src
+/Net35Solution/packages
