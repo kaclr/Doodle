@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.757
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29102.190
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Doodle.CommandLineUtils", "Doodle.CommandLineUtils\Doodle.CommandLineUtils.csproj", "{6E87BF35-4C11-4B66-8134-84AC3009FA6F}"
 EndProject
@@ -13,11 +13,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Doodle", "Doodle\Doodle.csp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NssIntegration", "NssIntegration\NssIntegration.csproj", "{B928F9C7-AD14-4DDA-9E98-F730DCEEEFAE}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Doodle.Toolkit", "Doodle.Utils\Doodle.Toolkit.csproj", "{684E9132-D316-4C4E-A8A2-A2B164BFECB4}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NssIntegration.Common", "NssIntegration.Common\NssIntegration.Common.csproj", "{D0244DB3-E640-4C2B-A09E-E172DF6173A9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test2", "Test2\Test2.csproj", "{6D474810-7452-435F-947D-60D629BC86E2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test2", "Test2\Test2.csproj", "{6D474810-7452-435F-947D-60D629BC86E2}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Doodle.Toolkit", "Doodle.Toolkit\Doodle.Toolkit.csproj", "{D56FB00D-955F-4047-854C-64200419E24C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,10 +45,6 @@ Global
 		{B928F9C7-AD14-4DDA-9E98-F730DCEEEFAE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B928F9C7-AD14-4DDA-9E98-F730DCEEEFAE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B928F9C7-AD14-4DDA-9E98-F730DCEEEFAE}.Release|Any CPU.Build.0 = Release|Any CPU
-		{684E9132-D316-4C4E-A8A2-A2B164BFECB4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{684E9132-D316-4C4E-A8A2-A2B164BFECB4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{684E9132-D316-4C4E-A8A2-A2B164BFECB4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{684E9132-D316-4C4E-A8A2-A2B164BFECB4}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D0244DB3-E640-4C2B-A09E-E172DF6173A9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D0244DB3-E640-4C2B-A09E-E172DF6173A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D0244DB3-E640-4C2B-A09E-E172DF6173A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -57,6 +53,10 @@ Global
 		{6D474810-7452-435F-947D-60D629BC86E2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6D474810-7452-435F-947D-60D629BC86E2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6D474810-7452-435F-947D-60D629BC86E2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D56FB00D-955F-4047-854C-64200419E24C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D56FB00D-955F-4047-854C-64200419E24C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D56FB00D-955F-4047-854C-64200419E24C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D56FB00D-955F-4047-854C-64200419E24C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
