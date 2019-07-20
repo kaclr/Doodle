@@ -10,14 +10,10 @@ namespace Test2
     {
         static void Main(string[] args)
         {
-            Console.WriteLine($"Child process {Process.GetCurrentProcess().Id} {args[0]}");
+            uint a = 100;
+            uint b = 200;
 
-
-            FileStream fs = new FileStream(new SafeFileHandle((IntPtr)int.Parse(args[0]), false), FileAccess.ReadWrite);
-            using (StreamWriter f = new StreamWriter(fs, Encoding.UTF8))
-            {
-                f.WriteLine("child process writed!");
-            }
+            Console.WriteLine(a - b);
         }
     }
 }

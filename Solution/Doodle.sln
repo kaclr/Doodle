@@ -17,7 +17,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NssIntegration.Common", "Ns
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test2", "Test2\Test2.csproj", "{6D474810-7452-435F-947D-60D629BC86E2}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Doodle.Toolkit", "Doodle.Toolkit\Doodle.Toolkit.csproj", "{D56FB00D-955F-4047-854C-64200419E24C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Doodle.Toolkit", "Doodle.Toolkit\Doodle.Toolkit.csproj", "{FA30A62A-68DE-4A7B-980D-678BD0235A0D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -53,10 +53,10 @@ Global
 		{6D474810-7452-435F-947D-60D629BC86E2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6D474810-7452-435F-947D-60D629BC86E2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6D474810-7452-435F-947D-60D629BC86E2}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D56FB00D-955F-4047-854C-64200419E24C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D56FB00D-955F-4047-854C-64200419E24C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D56FB00D-955F-4047-854C-64200419E24C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D56FB00D-955F-4047-854C-64200419E24C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FA30A62A-68DE-4A7B-980D-678BD0235A0D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FA30A62A-68DE-4A7B-980D-678BD0235A0D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FA30A62A-68DE-4A7B-980D-678BD0235A0D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FA30A62A-68DE-4A7B-980D-678BD0235A0D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
