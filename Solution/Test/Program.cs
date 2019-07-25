@@ -9,37 +9,40 @@ using NssIntegration;
 
 namespace Test
 {
+    class TestData
+    {
+        public int V;
+    }
+
     class Program
     {
+
         
         static void Main(string[] args)
         {
             Logger.verbosity = Verbosity.Verbose;
 
-            FLockUtil.Init(() => "/Users/harveyjin/Work/nssclient/Tools/BuildTools/ThirdParty/flock");
-
-            Console.WriteLine($"main process {Process.GetCurrentProcess().Id}");
-
-            // 使用flock给文件加锁
-            var flock = FLockUtil.NewFLock("lock");
-            bool success = false;
-            if (args[0] == "s")
+            ObjDictionary<string, TestData> dic = new ObjDictionary<string, TestData>
             {
-                Console.WriteLine($"flock share");
-                flock.AcquireShareLock();
-            }
-            else
+                { "a", new TestData() { V = 100 } },
+                { "b", new TestData() { V = 100 } }
+            };
+
+            //Dictionary<string, int> dic = new Dictionary<string, int>
+            //{
+            //    { "a", 100 },
+            //    { "b", 100 }
+            //};
+
+            JsonSerializer jsonSerializer = new JsonSerializer();
+            jsonSerializer.Formatting = Formatting.Indented;
+
+            using (var f = new StreamWriter("test2.json"))
             {
-                Console.WriteLine($"flock exclusive");
-                flock.AcquireExclusiveLock();
+                jsonSerializer.Serialize(f, dic);
             }
 
-            Console.WriteLine(success ? "success" : "failed");
 
-            while (true)
-            {
-                System.Threading.Thread.Sleep(1000);
-            }
         }
     }
 }

@@ -8,4 +8,8 @@
     <Folder Include="src\Internal\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Newtonsoft.Json-master\Src\Newtonsoft.Json\Newtonsoft.Json.csproj" />
+  </ItemGroup>
+
 </Project>

@@ -12,17 +12,11 @@ namespace NssIntegration
     public class ABAssetRelation
     {
         [JsonProperty]
-        private readonly Pool<string, ABInfo> m_abInfoPool = new Pool<string, ABInfo>();
+        private readonly Dictionary<string, ABInfo> m_abInfos = new Dictionary<string, ABInfo>();
         [JsonProperty]
-        private readonly Pool<string, AssetInfo> m_assetInfoPool = new Pool<string, AssetInfo>();
+        private readonly Dictionary<string, AssetInfo> m_assetInfos = new Dictionary<string, AssetInfo>();
 
         private string[] ignoreAssets = new string[0];
-
-        public ABAssetRelation()
-        {
-            m_abInfoPool.OnNewValue(abName => new ABInfo(abName));
-            m_assetInfoPool.OnNewValue(path => new AssetInfo(path));
-        }
 
         public void SetIgnoreAssets(params string[] ignoreAssets)
         {
@@ -31,38 +25,24 @@ namespace NssIntegration
 
         public ABInfo GetAB(string abPath)
         {
-            return m_abInfoPool.Get(abPath);
+            return m_abInfos.GetValueOrCreate(abPath, () => new ABInfo(abPath));
         }
 
         public IEnumerable<ABInfo> EnumABs()
         {
-            return m_abInfoPool.EnumValues();
+            return m_abInfos.Values;
         }
 
         public IEnumerable<AssetInfo> EnumAssets()
         {
-            return m_assetInfoPool.EnumValues();
+            return m_assetInfos.Values;
         }
 
-        public void SortAssets(Comparison<AssetInfo> comparison)
+        public List<AssetInfo> SortAssets(Comparison<AssetInfo> comparison)
         {
-            m_assetInfoPool.SortValues(comparison);
-        }
-
-        public void AddAssetSizeInfo(Dictionary<string, double> assetPath2KB)
-        {
-            foreach (var assetInfo in m_assetInfoPool.EnumValues())
-            {
-                if (assetPath2KB.TryGetValue(assetInfo.path, out double kb))
-                {
-                    assetInfo.kbSize = kb;
-                }
-                else
-                {
-                    Logger.WarningLog($"Asset '{assetInfo.path}' has no matched size!");
-                    //throw new NssIntegrationException($"Asset '{assetInfo.path}' has no matched size!");
-                }
-            }
+            var lst = new List<AssetInfo>(m_assetInfos.Count);
+            lst.Sort(comparison);
+            return lst;
         }
 
         public void Parse(string pathAssetInfoData, string pathBundleNodeData, string nssUnityProjDir = null, List<string> abWhiteList = null)
@@ -122,7 +102,7 @@ namespace NssIntegration
                 {
                     Dictionary<string, object> dicInfo = pair.Value;
 
-                    var abInfo = m_abInfoPool.Get(abName);
+                    var abInfo = GetAB(abName);
                     long bSize = (long)pair.Value["FileSize"];
                     abInfo.SetKBSize(bSize == -1 ? 0 : (double)bSize / 1024);
 
@@ -147,11 +127,12 @@ namespace NssIntegration
                             continue;
                         }
 
-                        var mainAsset = m_assetInfoPool.Get(mainAssetJToken.Value<string>());
+                        var mainAsset = m_assetInfos.GetValueOrCreate(assetPath, () => new AssetInfo(assetPath));
                         abInfo.AddMainAsset(mainAsset);
 
                         // 对应meta
-                        var mainAssetMeta = m_assetInfoPool.Get($"{mainAssetJToken.Value<string>()}.meta");
+                        var metaPath = assetPath + ".meta";
+                        var mainAssetMeta = m_assetInfos.GetValueOrCreate(metaPath, () => new AssetInfo(metaPath));
                         abInfo.AddMainAsset(mainAssetMeta);
 
                         // 存放MainAsset路径和它所在的ab包名字的关系，方面后面索引
@@ -169,7 +150,7 @@ namespace NssIntegration
 
             // 获取每个ab中MainAsset的依赖Asset，条件：不是其他ab的MainAsset，并且这个asset不在UI相关的ab包中
             Logger.Log($"Parsing ab's dep assets...");
-            foreach (var abInfo in m_abInfoPool.EnumValues())
+            foreach (var abInfo in m_abInfos.Values)
             {
                 Logger.VerboseLog($"{abInfo.name}");
 
@@ -204,8 +185,8 @@ namespace NssIntegration
                                 || depAssetABName.StartsWith("Font"))
                             {// 此依赖Asset不是一个MainAsset，或它是自己ab包中的MainAsset，或者是ui相关ab（ui相关资源冗余在了很多ab包中）
 
-                                abInfo.AddDepAsset(m_assetInfoPool.Get(depAssetPath));
-                                abInfo.AddDepAsset(m_assetInfoPool.Get($"{depAssetPath}.meta"));
+                                abInfo.AddDepAsset(m_assetInfos.GetValueOrCreate(depAssetPath, () => new AssetInfo(depAssetPath)));
+                                abInfo.AddDepAsset(m_assetInfos.GetValueOrCreate(depAssetPath, () => new AssetInfo($"{depAssetPath}.meta")));
                             }
 
                         }

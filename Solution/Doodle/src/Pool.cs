@@ -7,9 +7,7 @@ namespace Doodle
     public class Pool<TKey, TValue>
         where TValue: class, new()
     {
-        [JsonProperty]
         private readonly Dictionary<TKey, TValue> m_dic;
-        [JsonProperty]
         private readonly List<TValue> m_lst;
 
         private Func<TKey, TValue> m_onNewValue;
