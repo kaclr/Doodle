@@ -5,10 +5,34 @@ using System.IO;
 using Doodle;
 using Doodle.CommandLineUtils;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using NssIntegration;
 
 namespace Test
 {
+    class TestConverter : JsonConverter
+    {
+        public override bool CanConvert(Type objectType)
+        {
+            return objectType == typeof(TestData);
+        }
+
+        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public class TestData
+    {
+
+    }
+
     class Program
     {
         
@@ -16,30 +40,9 @@ namespace Test
         {
             Logger.verbosity = Verbosity.Verbose;
 
-            FLockUtil.Init(() => "/Users/harveyjin/Work/nssclient/Tools/BuildTools/ThirdParty/flock");
-
-            Console.WriteLine($"main process {Process.GetCurrentProcess().Id}");
-
-            // 使用flock给文件加锁
-            var flock = FLockUtil.NewFLock("lock");
-            bool success = false;
-            if (args[0] == "s")
-            {
-                Console.WriteLine($"flock share");
-                flock.AcquireShareLock();
-            }
-            else
-            {
-                Console.WriteLine($"flock exclusive");
-                flock.AcquireExclusiveLock();
-            }
-
-            Console.WriteLine(success ? "success" : "failed");
-
-            while (true)
-            {
-                System.Threading.Thread.Sleep(1000);
-            }
+            JsonSerializer jsonSerializer = new JsonSerializer();
+            jsonSerializer.Converters.Add(new TestConverter());
+            var o = jsonSerializer.Deserialize(new StreamReader("D:\\Jieji\\NssUnityProj\\Version\\Version_iPhone.json"), typeof(TestData));
         }
     }
 }

@@ -33,6 +33,7 @@ namespace Doodle.CommandLineUtils
             var verboseOpt = s_rootCommand.AddOption(new Option("-v|--verbose", "输出冗余", OptionType.NoValue));
             var forceConsoleOutputOpt = s_rootCommand.AddOption(new Option("-f|--forceConsoleOutput", "强制把日志输出到Console", OptionType.NoValue));
             var persistentSpaceOpt = s_rootCommand.AddOption(new Option("-p|--persistentSpace", "持久化目录", OptionType.SingleValue));
+            var tempSpaceOpt = s_rootCommand.AddOption(new Option("-t|--tempSpace", "临时目录", OptionType.SingleValue));
 
             s_rootCommand.OnExecute(() =>
             {
@@ -52,6 +53,7 @@ namespace Doodle.CommandLineUtils
                 Logger.VerboseLog($"verbose: {verboseOpt.isSet}");
                 Logger.VerboseLog($"forceConsoleOutput: {forceConsoleOutputOpt.isSet}");
                 Logger.VerboseLog($"persistentSpaceOpt: {persistentSpaceOpt.value}");
+                Logger.VerboseLog($"tempSpaceOpt: {tempSpaceOpt.value}");
 
                 if (forceConsoleOutputOpt.isSet)
                 {
@@ -61,6 +63,11 @@ namespace Doodle.CommandLineUtils
                 if (persistentSpaceOpt.isSet && !string.IsNullOrEmpty((string)persistentSpaceOpt.value))
                 {
                     SpaceUtil.SetPersistentSpace((string)persistentSpaceOpt.value);
+                }
+
+                if (tempSpaceOpt.isSet && !string.IsNullOrEmpty((string)tempSpaceOpt.value))
+                {
+                    SpaceUtil.SetTempSpace((string)tempSpaceOpt.value);
                 }
 
                 string logFile = (string)logFileOpt.value;

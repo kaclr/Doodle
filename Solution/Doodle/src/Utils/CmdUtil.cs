@@ -44,7 +44,7 @@ namespace Doodle
 
         private static Script GenScript(string cmd)
         {
-            var f = SpaceUtil.NewTempPath();
+            var f = SpaceUtil.NewTempPath() + ".bat";
             File.WriteAllText(f, cmd);
 
            return new Script(f);
