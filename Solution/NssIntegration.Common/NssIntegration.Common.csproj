@@ -7,7 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Newtonsoft.Json-master\Src\Newtonsoft.Json\Newtonsoft.Json.csproj" />
     <ProjectReference Include="..\Doodle.CommandLineUtils\Doodle.CommandLineUtils.csproj" />
     <ProjectReference Include="..\Doodle\Doodle.csproj" />
   </ItemGroup>

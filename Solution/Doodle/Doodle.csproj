@@ -5,11 +5,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="src\Internal\" />
+    <Compile Remove="src\Internal\**" />
+    <EmbeddedResource Remove="src\Internal\**" />
+    <None Remove="src\Internal\**" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Newtonsoft.Json-master\Src\Newtonsoft.Json\Newtonsoft.Json.csproj" />
+    <ProjectReference Include="..\Newtonsoft.Json\Newtonsoft.Json.csproj" />
   </ItemGroup>
 
 </Project>

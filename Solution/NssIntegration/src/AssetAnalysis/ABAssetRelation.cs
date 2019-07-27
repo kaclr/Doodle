@@ -9,6 +9,13 @@ namespace NssIntegration
 {
     using Doodle;
 
+    public enum DiffType
+    {
+        Add,
+        Del,
+        Mod,
+    }
+
     public class ABAssetRelation
     {
         [JsonProperty]
@@ -40,7 +47,7 @@ namespace NssIntegration
 
         public List<AssetInfo> SortAssets(Comparison<AssetInfo> comparison)
         {
-            var lst = new List<AssetInfo>(m_assetInfos.Count);
+            var lst = new List<AssetInfo>(m_assetInfos.Values);
             lst.Sort(comparison);
             return lst;
         }
@@ -127,12 +134,12 @@ namespace NssIntegration
                             continue;
                         }
 
-                        var mainAsset = m_assetInfos.GetValueOrCreate(assetPath, () => new AssetInfo(assetPath));
+                        var mainAsset = m_assetInfos.GetValueOrCreate(assetPath, () => new AssetInfo(assetPath, dicAssetInfoData[assetPath]));
                         abInfo.AddMainAsset(mainAsset);
 
                         // 对应meta
                         var metaPath = assetPath + ".meta";
-                        var mainAssetMeta = m_assetInfos.GetValueOrCreate(metaPath, () => new AssetInfo(metaPath));
+                        var mainAssetMeta = m_assetInfos.GetValueOrCreate(metaPath, () => new AssetInfo(metaPath, dicAssetInfoData[assetPath]));
                         abInfo.AddMainAsset(mainAssetMeta);
 
                         // 存放MainAsset路径和它所在的ab包名字的关系，方面后面索引
@@ -185,8 +192,8 @@ namespace NssIntegration
                                 || depAssetABName.StartsWith("Font"))
                             {// 此依赖Asset不是一个MainAsset，或它是自己ab包中的MainAsset，或者是ui相关ab（ui相关资源冗余在了很多ab包中）
 
-                                abInfo.AddDepAsset(m_assetInfos.GetValueOrCreate(depAssetPath, () => new AssetInfo(depAssetPath)));
-                                abInfo.AddDepAsset(m_assetInfos.GetValueOrCreate(depAssetPath, () => new AssetInfo($"{depAssetPath}.meta")));
+                                abInfo.AddDepAsset(m_assetInfos.GetValueOrCreate(depAssetPath, () => new AssetInfo(depAssetPath, dicAssetInfoData[depAssetPath])));
+                                abInfo.AddDepAsset(m_assetInfos.GetValueOrCreate(depAssetPath, () => new AssetInfo($"{depAssetPath}.meta", dicAssetInfoData[$"{depAssetPath}.meta"])));
                             }
 
                         }

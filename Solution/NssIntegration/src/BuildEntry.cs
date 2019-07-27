@@ -92,5 +92,91 @@ namespace NssIntegration
         {
             IFSUtil.UnpackIFS(ifsPath, outDir);
         }
+
+        private static void ParseABAssetRelation(
+            string pathAssetInfoData1, 
+            string pathBundleNodeData1,
+            string pathAssetInfoData2,
+            string pathBundleNodeData2,
+            string outAsset2ABInfo,
+            string outModAsset2ABInfoByCount,
+            string outModAsset2ABInfoByKB,
+            [ParameterConfiguration("是否收集cs脚本信息", optionTemplate = "-considerScript")] bool considerScript)
+        {
+            Logger.Log("分析ABAssetRelation1...");
+            ABAssetRelation abAssetRelation1 = new ABAssetRelation();
+            if (!considerScript)
+            {
+                abAssetRelation1.SetIgnoreAssets(".cs");
+            }
+            abAssetRelation1.Parse(pathAssetInfoData1, pathBundleNodeData1);
+
+            Logger.Log("分析ABAssetRelation2...");
+            ABAssetRelation abAssetRelation2 = new ABAssetRelation();
+            if (!considerScript)
+            {
+                abAssetRelation2.SetIgnoreAssets(".cs");
+            }
+            abAssetRelation2.Parse(pathAssetInfoData2, pathBundleNodeData2);
+
+            var sizeOrderAssets = abAssetRelation1.SortAssets((assetInfo1, assetInfo2) =>
+            {
+                return (int)(assetInfo2.abTotalKBSize - assetInfo1.abTotalKBSize);
+            });
+
+            Logger.Log($"输出outAsset2ABInfo -> '{outAsset2ABInfo}'...");
+            using (StreamWriter f = new StreamWriter(outAsset2ABInfo))
+            {
+                sizeOrderAssets.ForEach(assetInfo => f.WriteLine($"{assetInfo.path}|{assetInfo.abTotalKBSize}|{assetInfo.abCount}"));
+            }
+
+            // 做资源diff
+            List<AssetDiffInfo> assetDiffInfos = new List<AssetDiffInfo>();
+            foreach (var ab1 in abAssetRelation1.EnumABs())
+            {
+                var ab2 = abAssetRelation2.GetAB(ab1.name);
+                if (ab2 == null)
+                    continue;
+
+                var diff = ab1.GenDiff(ab2);
+
+                foreach (var assetDiffInfo in diff.assetDiffInfos)
+                {
+                    if (assetDiffInfo.diffType != DiffType.Mod) continue;
+
+                    if (assetDiffInfos.FindIndex(innerAssetDiffInfo => innerAssetDiffInfo.assetInfo.path == assetDiffInfo.assetInfo.path) < 0)
+                    {// 防止重复
+                        assetDiffInfos.Add(assetDiffInfo);
+                    }
+                }
+            }
+
+            // 数量排序
+            Logger.Log($"输出outModAsset2ABInfoByCount -> '{outModAsset2ABInfoByCount}'...");
+            assetDiffInfos.Sort((assetDiff1, assetDiff2) =>
+            {
+                return assetDiff2.assetInfo.abCount - assetDiff1.assetInfo.abCount;
+            });
+            using (StreamWriter f = new StreamWriter(outModAsset2ABInfoByCount))
+            {
+                assetDiffInfos.ForEach(assetDiffInfo => f.WriteLine($"{assetDiffInfo.assetInfo.path}|{assetDiffInfo.assetInfo.abTotalKBSize}|{assetDiffInfo.assetInfo.abCount}"));
+            }
+
+            // 大小排序
+            Logger.Log($"输出outModAsset2ABInfoByKB -> '{outModAsset2ABInfoByKB}'...");
+            assetDiffInfos.Sort((assetDiff1, assetDiff2) =>
+            {
+                return (int)(assetDiff2.assetInfo.abTotalKBSize - assetDiff1.assetInfo.abTotalKBSize);
+            });
+            using (StreamWriter f = new StreamWriter(outModAsset2ABInfoByKB))
+            {
+                assetDiffInfos.ForEach(assetDiffInfo => f.WriteLine($"{assetDiffInfo.assetInfo.path}|{assetDiffInfo.assetInfo.abTotalKBSize}|{assetDiffInfo.assetInfo.abCount}"));
+            }
+
+            //using (StreamWriter f = new StreamWriter(outfile))
+            //{
+            //    assetDiffInfos.ForEach(assetDiffInfo => f.WriteLine(assetDiffInfo.assetInfo.path));
+            //}
+        }
     }
 }

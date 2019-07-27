@@ -14,6 +14,8 @@ namespace NssIntegration
             return abInfo.m_dicTotalAsset.TryGetValue(assetPath, out AssetInfo assetInfo);
         }
 
+        public IReadOnlyCollection<AssetDiffInfo> assetDiffInfos => m_dicTotalAssetDiff.Values;
+
         [JsonProperty]
         public string name { get; private set; }
         [JsonProperty]
@@ -26,6 +28,8 @@ namespace NssIntegration
         [JsonProperty]
         private readonly Dictionary<string, AssetInfo> m_dicTotalAsset = new Dictionary<string, AssetInfo>();
 
+        private Dictionary<string, AssetDiffInfo> m_dicTotalAssetDiff;
+
         private MD5CryptoServiceProvider m_md5 = new MD5CryptoServiceProvider();
 
         public ABInfo() { }
@@ -36,34 +40,24 @@ namespace NssIntegration
             this.kbSize = -1;
         }
 
-        public ABDiffInfo GenDiff(ABInfo other, string myNssUnityProj, string otherNssUnityProj)
+        public ABInfo GenDiff(ABInfo other)
         {
-            ABDiffInfo abDiffInfo = new ABDiffInfo()
-            {
-                name = name,
-                kbSize = kbSize,
-            };
+            ABInfo diff = (ABInfo)other.MemberwiseClone();
+            diff.m_dicTotalAssetDiff = new Dictionary<string, AssetDiffInfo>();
 
             foreach (var myAssetInfo in m_lstTotalAsset)
             {
                 var assetPath = myAssetInfo.path;
-                if (!ExistsAsset(this, assetPath, myNssUnityProj))
-                {
-                    continue;
-                }
 
-                if (!ExistsAsset(other, assetPath, otherNssUnityProj))
+                if (!other.m_dicTotalAsset.TryGetValue(assetPath, out var otherAssetInfo))
                 {// 自己有，别人没有，为新增
-                    abDiffInfo.AddDiffAsset(ABDiffInfo.DiffType.Add, assetPath);
+                    diff.m_dicTotalAssetDiff[assetPath] = new AssetDiffInfo() { assetInfo = myAssetInfo, diffType = DiffType.Add };
                 }
                 else
                 {// 都有，检查是否修改
-                    var myAssetLocalPath = Path.Combine(myNssUnityProj, assetPath);
-                    var otherAssetLocalPath = Path.Combine(otherNssUnityProj, assetPath);
-
-                    if (CheckLocalAssetChange(myAssetLocalPath, otherAssetLocalPath))
+                    if (myAssetInfo.sha1 != otherAssetInfo.sha1)
                     {
-                        abDiffInfo.AddDiffAsset(ABDiffInfo.DiffType.Mod, assetPath);
+                        diff.m_dicTotalAssetDiff[assetPath] = new AssetDiffInfo() { assetInfo = myAssetInfo, diffType = DiffType.Mod };
                     }
                 }
             }
@@ -72,17 +66,12 @@ namespace NssIntegration
             {
                 var assetPath = otherAssetInfo.path;
 
-                if (!ExistsAsset(other, assetPath, otherNssUnityProj))
-                {
-                    continue;
-                }
-
-                if (!ExistsAsset(this, assetPath, myNssUnityProj))
+                if (!m_dicTotalAsset.TryGetValue(assetPath, out var myAssetInfo))
                 {// 别人有，自己没有，为删除
-                    abDiffInfo.AddDiffAsset(ABDiffInfo.DiffType.Del, otherAssetInfo.path);
+                    diff.m_dicTotalAssetDiff[assetPath] = new AssetDiffInfo() { assetInfo = otherAssetInfo, diffType = DiffType.Del };
                 }
             }
-            return abDiffInfo;
+            return diff;
         }
 
         public void SetKBSize(double kbSize)

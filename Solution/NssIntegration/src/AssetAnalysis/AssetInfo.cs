@@ -18,7 +18,13 @@ namespace NssIntegration
         public double kbSize
         {
             get;
-            set;
+            private set;
+        }
+
+        public string sha1
+        {
+            get;
+            private set;
         }
 
         public int abCount
@@ -52,9 +58,11 @@ namespace NssIntegration
         {
         }
 
-        public AssetInfo(string path)
+        public AssetInfo(string path, Dictionary<string, object> dataInJson)
         {
             this.path = path;
+            this.kbSize = Convert.ToDouble(dataInJson["FileSize"]);
+            this.sha1 = Convert.ToString(dataInJson["FileSha1"]);
         }
 
         public void AddAB(ABInfo ab)
