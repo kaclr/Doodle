@@ -10,6 +10,9 @@ namespace Doodle
     {
         public bool printToVerbose { get; set; } = true;
 
+        public Action<string> OutputDataReceived = null;
+        public Action<string> ErrorDataReceived = null;
+
         private readonly string m_exePath;
         protected StringBuilder m_stderr;
         protected StringBuilder m_stdout;
@@ -77,7 +80,7 @@ namespace Doodle
                 m_stderr = new StringBuilder();
                 p.BeginOutputReadLine();
                 p.BeginErrorReadLine();
-
+                
                 p.WaitForExit();
                 exitCode = p.ExitCode;
             }
@@ -101,8 +104,14 @@ namespace Doodle
 
             m_stdout.AppendLine(e.Data);
 
+      
+
             if (printToVerbose)
+            {
                 Logger.VerboseLog(e.Data);
+            }
+
+            OutputDataReceived?.Invoke(e.Data);
         }
 
         private void OnStderr(object sender, DataReceivedEventArgs e)
@@ -115,7 +124,11 @@ namespace Doodle
             m_stderr.AppendLine(e.Data);
 
             if (printToVerbose)
+            {
                 Logger.VerboseLog(e.Data);
+            }
+
+            ErrorDataReceived?.Invoke(e.Data);
         }
 
     }

@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Doodle
 {
-    public class LogFile
+    public class LogFile :ILog
     {
         public Verbosity verbosity { get; set; } = Verbosity.Verbose;
 
