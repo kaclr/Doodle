@@ -38,6 +38,7 @@ namespace NssIntegration
             CLApp.AddCommand(NewMethodCommand(typeof(BuildProcedure), "PrepareUniqueVersionJson"));
             CLApp.AddCommand(NewMethodCommand(typeof(BuildProcedure), "ModifyMacro"));
             CLApp.AddCommand(NewMethodCommand(typeof(BuildProcedure), "BuildApk"));
+            CLApp.AddCommand(NewMethodCommand(typeof(BuildEntry), "UnpackIFS"));
             CLApp.AddCommand(NewMethodCommand(typeof(BuildEntry), "Build"));
 
             Logger.SetLogFile("NssIntegrationStart", null);

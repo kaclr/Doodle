@@ -9,7 +9,6 @@
     <ProjectReference Include="..\Doodle.CLFramework\Doodle.CLFramework.csproj" />
     <ProjectReference Include="..\Doodle.CommandLineUtils\Doodle.CommandLineUtils.csproj" />
     <ProjectReference Include="..\Doodle.Toolkit\Doodle.Toolkit.csproj" />
-    <ProjectReference Include="..\Doodle.Utils\Doodle.Toolkit.csproj" />
     <ProjectReference Include="..\Doodle\Doodle.csproj" />
     <ProjectReference Include="..\NssIntegration.Common\NssIntegration.Common.csproj" />
     <ProjectReference Include="..\NssIntegration\NssIntegration.csproj" />

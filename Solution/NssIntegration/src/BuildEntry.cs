@@ -87,5 +87,10 @@ namespace NssIntegration
                 Path.Combine(outputDir, NssHelper.GetStandardAppName(buildTarget, buildMode, verLine, buildAppResult.defaultTDir, buildAppResult.appVersion, svnRev)), 
                 ifsPath);
         }
+
+        private static void UnpackIFS(string ifsPath, string outDir)
+        {
+            IFSUtil.UnpackIFS(ifsPath, outDir);
+        }
     }
 }
