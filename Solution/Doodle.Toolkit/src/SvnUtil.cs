@@ -225,6 +225,43 @@ namespace Doodle
             //最后提交
             Commit(localPath, comment);
         }
+        /// <summary>
+        /// SVN获取当前目录修改或者增加的文件
+        /// </summary>
+        /// <param name="localPath">本地目录</param>
+        public static bool GetAddOrModify(string localPath,out List<string> filePaths)
+        {
+            InitInner();
+            filePaths = new List<string>();
+
+            bool addOrModyfy = false;    
+            string st = SvnExecuteOut($"st \"{localPath}\"");
+
+            if (!string.IsNullOrEmpty(st))
+            {
+                var lines = st.Split('\n');
+                foreach (var line in lines)
+                {
+                    if (string.IsNullOrEmpty(line))
+                        continue;
+                    //状态显示有新增的文件
+                    if (CheckFileStatusFromStatusLine(line, "\\?"))
+                    {
+                        string fileName = GetFileNameFromStatusLine(line);
+                        addOrModyfy = true;
+                        filePaths.Add(fileName);
+                    }
+                    //状态显示有修改的文件
+                    else if (CheckFileStatusFromStatusLine(line, "M"))
+                    {
+                        string fileName = GetFileNameFromStatusLine(line);
+                        filePaths.Add(fileName);
+                        addOrModyfy = true;
+                    }
+                }
+            }
+            return addOrModyfy;
+        }
 
         /// <summary>
         /// SVN更新，无交互防止卡住
@@ -326,14 +363,15 @@ namespace Doodle
         }
 
         /// <summary>
-        /// 添加文件到版本控制下，会无视已受控制的文件
+        /// 清除
         /// </summary>
         /// <param name="localPath">本地目录</param>
-        public static void Cleanup(string localPath)
+        public static void Cleanup(string localPath, bool removeUnversioned = false)
         {
             InitInner();
-            SvnExecuteOut($"cleanup \"{localPath}\"");
+            SvnExecuteOut($"cleanup \"{localPath}\"" + (removeUnversioned?" --remove-unversioned":""));
         }
+
 
         /// <summary>
         /// 带提交日志的SVN提交
